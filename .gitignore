@@ -1,0 +1,16 @@
+.cproject
+.project
+Makefile
+Makefile.Debug
+Makefile.Release
+#	TODO
+libSerialIO.so
+libSerialIO.so.0
+libSerialIO.so.0.0
+libSerialIO.so.0.0.1
+notes.txt
+debug/
+release/
+unitTests/debug
+unitTests/release
+docs/InterractingWithFreeEMS.png
