@@ -1,0 +1,13 @@
+TODO WHEN BUILDING THE LOADER CHECK FOR LIB UPDATES
+
+Finally I found the solution after finding the right words to search for.
+The main problem was that the QMake created Makefiles did not check for the
+"static" library as a dependency of the target. I solved this by adding
+
+PRE_TARGETDEPS += "path/to/my/libRary.a"
+
+To the project file. With that the binary gets relinked, when there were changes in the library.
+
+Additionally I setup each project in eclipse to reference the dependent projects
+ (Project properties -> Project References) to trigger rebuilds if necessary.
+ ----------------------------------------------------------------------------------------------
