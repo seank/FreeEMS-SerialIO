@@ -1,9 +1,13 @@
 .cproject
 .project
+.settings
+gmon.out
+*.o
+moc*
+unitTests/asyncUnitTesting
 Makefile
 Makefile.Debug
 Makefile.Release
-#	TODO
 libSerialIO.so
 libSerialIO.so.0
 libSerialIO.so.0.0
