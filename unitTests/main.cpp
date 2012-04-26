@@ -1,18 +1,60 @@
 #include <QtCore>
 #include <QCoreApplication>
-#include "../inc/SerialIO.h"
+#include <QDebug>
 
-int main(int argc, char *argv[])
-{
-    QCoreApplication a(argc, argv);
-	IPDS::SerialIO *serialConnection = new IPDS::SerialIO;
-	serialConnection->openPort("/dev/ttyUSB0");
-	serialConnection->setupPort(115200, 8, "odd", 1);
+#include "inc/asyncUnitTesting.h"
+#include "inc/globals.h"
+
+int main(int argc, char *argv[]) {
+	QCoreApplication a(argc, argv);
+	serialConnection = new IPDS::SerialIO;
+	QCoreApplication app(argc, argv);
+	QStringList args = app.arguments();
+	QString argument;
+	/* list of valid arguments */
+    QString portName("--port=");
+
+	for (int i = 1; i < args.size(); ++i) {
+		argument = args.at(i);
+		if (argument.startsWith(portName)) {
+			portName = argument.right(argument.length() - portName.length());
+			qDebug() << "Port name:"<< portName;
+		} else {
+			qDebug() << "Uknown arg:" << args.at(i);
+		}
+	}
+	if(portName.isEmpty()) {
+		qDebug() << "Error: you must specify a serial port, eg. --port=/dev/ttyUSB0" << endl;
+	}
+
+	serialConnection->openPort(portName);
+	serialConnection->setupPort(115200, 8, "none", 1); // SM
 	if (serialConnection->isOpen() == true) {
-		std::cout << "port open, starting communication threads ";
+		qDebug("port open, starting communication threads");
 		serialConnection->communicate();
 	} else {
-		std::cout << "error port not open";
+		qDebug("error port not open");
 	}
-    return a.exec();
+	smPingTest();
+	return a.exec();
+}
+
+void smPingTest() {
+	unsigned char rxData[10];
+	unsigned char enableSM = 0x0d;
+	unsigned int bytesRead;
+	QElapsedTimer roundTrip;
+
+	serialConnection->setupPort(115200, 8, "none", 1); // SM
+	serialConnection->communicate();
+	while (1) {
+		roundTrip.start();
+		serialConnection->writeData(&enableSM, 1);
+		bytesRead = serialConnection->readData(&rxData[0], 3);
+		if(bytesRead == 3) {
+			qDebug("Sent one byte and received three bytes in %d msec(s)", roundTrip.elapsed());
+		} else {
+			qDebug("Read came up short, expected 3 but read %d in %d msec(s)", bytesRead, roundTrip.elapsed());
+		}
+	}
 }
