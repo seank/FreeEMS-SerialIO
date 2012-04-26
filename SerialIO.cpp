@@ -14,7 +14,7 @@ SerialIO::SerialIO(): asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_w
 	m_isCommunicating = false;
 	m_isConfigured = false;
 	m_numBytesExpected = 1;
-	m_readBlockMS = 200; //default to 200ms before read() times out
+	m_readBlockMS = 2000; //default to 2000ms before read() times out
 	//QString mode = "FREEEMS";
 	QString mode = "RAW";
 	asyncReader.setMode(mode);
@@ -349,24 +349,25 @@ void IPDS::SerialIO::flushRX() {
 }
 
 int IPDS::SerialIO::readData(unsigned char* buf, size_t numBytes) {
-	qDebug("Performing a read...");
+//	qDebug("Performing a read...");
 	unsigned int i;
 	unsigned int lastNumBytes;
 	unsigned int currentNumBytes;
-	for(i = 0, lastNumBytes = 0, currentNumBytes = 0; numBytes > (currentNumBytes = m_readBuffer.bufferSize()); ) {
+	for (i = 0, lastNumBytes = 0, currentNumBytes = 0;
+			numBytes > (currentNumBytes = m_readBuffer.bufferSize());) {
 //		qDebug("buffer smaller than requested(have %i but need %i) read size waiting....", m_readBuffer.bufferSize(), numBytes);
 		g_readMutex.lock();
-		if(g_readBlock.wait(&g_readMutex, 1) == false) { // wait for 1ms or until we are woke up by a byte coming in
-			if(lastNumBytes == currentNumBytes) {
+		if (g_readBlock.wait(&g_readMutex, 1) == false) { // wait for 1ms or until we are woke up by a byte coming in
+			if (lastNumBytes == currentNumBytes) {
 				i++; //we have timed out
 			} else {
 				i = 0;
 			}
 		}
 		g_readMutex.unlock();
-		if(i > m_readBlockMS) { //TODO make configurable
-			qDebug("we timeout readData is returning what it got");
-			return numBytes;
+		if (i > m_readBlockMS) { //TODO make configurable
+			qDebug("Read Incomplete: We timed out, readData() is returning %d of %d requested bytes", currentNumBytes, numBytes);
+			return currentNumBytes;
 		}
 		lastNumBytes = currentNumBytes;
 	}
