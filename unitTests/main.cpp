@@ -52,9 +52,23 @@ void smPingTest() {
 		serialConnection->writeData(&enableSM, 1);
 		bytesRead = serialConnection->readData(&rxData[0], 3);
 		if(bytesRead == 3) {
-			qDebug("Sent one byte and received three bytes in %d msec(s)", roundTrip.elapsed());
+			qDebug("Sent one byte and received three bytes in %d msec(s)", (int) roundTrip.elapsed());
 		} else {
-			qDebug("Read came up short, expected 3 but read %d in %d msec(s)", bytesRead, roundTrip.elapsed());
+			qDebug("Read came up short, expected 3 but read %d in %d msec(s)", bytesRead, (int) roundTrip.elapsed());
 		}
 	}
+}
+
+void FreeEMSPacketCounter() {
+//	unsigned long numPackets = 0;
+//	unsigned long numBadPackets = 0;
+	QString mode = "FREEEMS";
+	serialConnection->setupPort(115200, 8, "none", 1); // SM
+	serialConnection->communicate();
+	serialConnection->setDataMode(mode);
+
+	while (1) {
+
+	}
+
 }
