@@ -52,9 +52,10 @@ void smPingTest() {
 		serialConnection->writeData(&enableSM, 1);
 		bytesRead = serialConnection->readData(&rxData[0], 3);
 		if(bytesRead == 3) {
-			qDebug("Sent one byte and received three bytes in %d msec(s)", (int) roundTrip.elapsed());
+			qDebug() << "Sent one byte and recieved three bytes in" << roundTrip.elapsed() << "msec(s)";
 		} else {
-			qDebug("Read came up short, expected 3 but read %d in %d msec(s)", bytesRead, (int) roundTrip.elapsed());
+			qDebug() << "Read came up short, expected 3 but read " << bytesRead << "in " << roundTrip.elapsed()
+					<< " msec(s)";
 		}
 	}
 }

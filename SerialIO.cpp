@@ -366,7 +366,8 @@ int IPDS::SerialIO::readData(unsigned char* buf, size_t numBytes) {
 		}
 		g_readMutex.unlock();
 		if (i > m_readBlockMS) { //TODO make configurable
-			qDebug("Read Incomplete: We timed out, readData() is returning %d of %d requested bytes", currentNumBytes, numBytes);
+			qDebug() << "Read Incomplete: We timed out, readData() is returning " <<  currentNumBytes << " of"
+					<< numBytes << " requested bytes";
 			return currentNumBytes;
 		}
 		lastNumBytes = currentNumBytes;
