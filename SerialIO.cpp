@@ -166,7 +166,7 @@ int IPDS::SerialIO::setupPort(int baudrate, int databits, const QString& parity,
 	   } else if (parity == "none") {
 		   newtio.c_cflag &= ~(PARENB | PARODD);
 	   } else {
-		   qDebug("Parity not specified defaulting to none.");
+		   qDebug() << "Parity not specified defaulting to none.";
 		   newtio.c_cflag &= ~(PARENB | PARODD);
 	   }
 	   //disable hardware handshake
@@ -270,7 +270,7 @@ void IPDS::SerialIO::processTXError(int RXErrorNumber) {
 }
 
 void IPDS::SerialIO::receivedRXBlock(payloadVector payload) {
-	qDebug("RXblock callback answered");
+	qDebug() << "RXblock callback answered";
 	qDebug() << payload;
 
 	emit readBytesFinished(payload);
@@ -281,7 +281,7 @@ void IPDS::SerialIO::receivedRXBlock(payloadVector payload) {
 void IPDS::SerialIO::receivedRXPacket(payloadVector packet) {
 //	packet.push_back('h');
 //	m_readBuffer.fillVector(test, head, tail);
-	qDebug("SerialIO RXPacket callback answered");
+	qDebug() << "SerialIO RXPacket callback answered";
 	qDebug() << packet;
 
 	emit readPacketFinished(packet);
@@ -300,7 +300,7 @@ void IPDS::SerialIO::closePort() { //maybe rename to shutdown
 	}
 	m_isCommunicating = false;
 	m_isOpen = false;
-	qDebug("Waiting for threads to finish");
+	qDebug() << "Waiting for threads to finish";
 	if (asyncWriter.isRunning()) {
 		asyncWriter.shutdownThread();
 		asyncWriter.wait();
@@ -313,10 +313,10 @@ void IPDS::SerialIO::closePort() { //maybe rename to shutdown
 		//	asyncReader.terminate(); // if its still running kill it!
 		//}
 	}
-	qDebug("Done waiting for threads");
+	qDebug() << "Done waiting for threads";
 	close(m_FD);
 	m_FD = -1;
-	qDebug("closed port");
+	qDebug() << "closed port";
 }
 
 void IPDS::SerialIO::addByte(unsigned char& byte) {
@@ -332,7 +332,7 @@ void IPDS::SerialIO::addByte(unsigned char& byte) {
 }
 
 void IPDS::SerialIO::writeData(const void* data, size_t bufferSize) {
-	qDebug("Performing a write");
+	qDebug() << "Performing a write";
 	unsigned int i;
 	for(i = 0; bufferSize > i; i++) {
 		m_writeBuffer.pushByte(*(static_cast<const unsigned char*>(data) + i));

@@ -30,10 +30,10 @@ int main(int argc, char *argv[]) {
 	serialConnection->openPort(portName);
 	serialConnection->setupPort(115200, 8, "none", 1); // SM
 	if (serialConnection->isOpen() == true) {
-		qDebug("port open, starting communication threads");
+		qDebug() << "port open, starting communication threads";
 		serialConnection->communicate();
 	} else {
-		qDebug("error port not open");
+		qDebug() << "error port not open";
 	}
 	smPingTest();
 	return a.exec();

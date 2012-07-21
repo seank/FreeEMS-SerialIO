@@ -28,7 +28,7 @@ CircularBuffer::~CircularBuffer() {
 
 bool CircularBuffer::pushByte(const unsigned char& byte) {
 	if (m_bufFull == true) {
-		qDebug("buffer overrun");
+		qDebug() << "buffer overrun";
 		return false;
 	} else {
 		*(m_data + m_head) = byte;
@@ -38,7 +38,7 @@ bool CircularBuffer::pushByte(const unsigned char& byte) {
 		}
 		if (m_tail == m_head) {
 			m_bufFull = true;
-			qDebug("buffer full");
+			qDebug() << "buffer full";
 			return false;
 		}
 //		qDebug("added byte to buffer");
@@ -73,7 +73,7 @@ unsigned int CircularBuffer::getTailIndex() {
 
 unsigned char CircularBuffer::getByte() {
 	if(bufferSize() == 0) {
-		qDebug("problem getByte() called when the buffer was empty");
+		qDebug() << "problem getByte() called when the buffer was empty";
 		return 0;
 	}
 	unsigned char byte;
@@ -107,7 +107,7 @@ void CircularBuffer::RXFromBuffer(unsigned char *buf, size_t size) {
 			i = 0;
 		}
 		byte = *(m_data + i);
-		qDebug("RXFromBuffer TX'd %u", byte);
+		qDebug() << "RXFromBuffer TX'd " << byte;
 		*(buf + j) = byte;
 	}
 	//consume
@@ -120,7 +120,7 @@ void CircularBuffer::bufferBarf() {
 	for(i = 0; m_bufferSize > i; i++) {
 		barf.push_back((unsigned char) *(m_data + i));
 	}
-	qDebug("Barfing circular buffer");
+	qDebug() << "Barfing circular buffer";
 	qDebug() << barf;
 }
 

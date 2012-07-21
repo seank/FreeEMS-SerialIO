@@ -26,7 +26,7 @@ AsyncRead::~AsyncRead() {
 }
 
 void IPDS::AsyncRead::shutdownThread() {
-	qDebug("Shutdown request AsyncRead");
+	qDebug() << "Shutdown request AsyncRead";
 	g_readShutdownMutex.lock();
 	m_shutdown = true;
 	g_readShutdownMutex.unlock();
@@ -62,7 +62,7 @@ void IPDS::AsyncRead::run() {
 //		g_readShutdownMutex.unlock();
 		if (*m_FD == -1) {
 			//file descriptor went bad on us
-			qDebug("HES DEAD JIM, PORT DIED");
+			qDebug() << "HES DEAD JIM, PORT DIED";
 			return; //terminate thread
 			//emit RXError(INVALID_FD);
 		} else {
@@ -72,7 +72,7 @@ void IPDS::AsyncRead::run() {
 				processByte(byte);
 			} else if (result == 0) {
 				// read zero bytes but did not error
-				qDebug("READ() gave us 0, something must be wrong emitting error");
+				qDebug() << "READ() gave us 0, something must be wrong emitting error";
 				emit RXError(BAD_FD);
 			} else {
 				// recieved some sort of error
@@ -90,16 +90,15 @@ void IPDS::AsyncRead::processByte(unsigned char& byte) {
 	if (m_mode == "FREEEMS") {
 		if (m_insidePacket == false) {
 			if ((byte == START_BYTE) && (m_lastByte != ESCAPE_BYTE)) {
-				qDebug("start of packet detected");
+				qDebug() << "start of packet detected";
 				m_numConsecutiveGarbageBytes = 0;
 				m_insidePacket = true;
 				m_readBuffer->bufferSaveLastAsFirst();
 			} else {
-				qDebug("read %x outside of packet last byte was %x", byte,
-						m_lastByte);
+				qDebug() << "read " << byte << " outside of packet, last byte was " << m_lastByte;
 				++m_numConsecutiveGarbageBytes;
 				if (m_numConsecutiveGarbageBytes > 156) { //todo clean/rethink
-					qDebug("max number of out of packet bytes reached terminating reader");
+					qDebug() << "max number of out of packet bytes reached terminating reader";
 					m_readBuffer->bufferBarf();
 				}
 //				m_readBuffer->bufferBarf();
@@ -108,7 +107,7 @@ void IPDS::AsyncRead::processByte(unsigned char& byte) {
 			if ((byte == STOP_BYTE) && (m_lastByte != ESCAPE_BYTE)) {
 				m_insidePacket = false;
 				m_numPacketsRX++;
-				qDebug("END of packet detected");
+				qDebug() << "END of packet detected";
 				m_readBuffer->fillPayload(payload);
 //				qDebug("size of packet is %i", m_readBuffer->bufferSize());
 				emit
@@ -120,7 +119,7 @@ void IPDS::AsyncRead::processByte(unsigned char& byte) {
 	} else if (m_mode == "RAW") {
 		//TODO just push bytes to the buffer
 		//maybe emit an error if the buffer overruns
-		qDebug("a byte just came in the serial port in raw mode");
+		qDebug() << "a byte just came in the serial port in raw mode";
 		g_readBlock.wakeAll();
 	} else {
 		if (m_bytesExpected > 0) {
@@ -130,7 +129,7 @@ void IPDS::AsyncRead::processByte(unsigned char& byte) {
 				emit RXBlock(payload);
 			}
 		} else {
-			qDebug("read unexpected garbage on the line %x", byte);
+			qDebug() << "read unexpected garbage on the line " << byte;
 		}
 	}
 	m_lastByte = byte;
