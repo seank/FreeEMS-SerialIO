@@ -38,21 +38,7 @@ void IPDS::AsyncWrite::run() {
 		g_writeShutdownMutex.unlock();
 		while (m_writeBuffer->bufferSize() > 0 && m_shutdown == false) {
 			byte = m_writeBuffer->getByte();
-
-#ifdef Q_OS_WIN32
-
-		if (!::WriteFile(m_portHandle, (void*)&c, (DWORD)1, (LPDWORD)&len, NULL))
-		{
-			qDebug() << "Serial Write Error";
-			return;
-		}
-//		msleep(m_interByteSendDelay);
-//	}
-//	return 0;
-#else
-
 			result = write(*_FD, &byte, 1);
-#endif //Q_OS_WIN32
 			if (result < 0) {
 				qDebug() << "Error while trying to write to file descriptor, terminating writer";
 				return;
