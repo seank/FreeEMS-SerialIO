@@ -9,6 +9,103 @@
 
 namespace IPDS {
 
+#ifdef __WIN32__
+void IPDS::SerialIO::win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop)
+{
+	DCB dcb;
+	WSADATA wsaData;
+	int res = 0;
+	COMMTIMEOUTS timeouts;
+
+	ZeroMemory(&dcb, sizeof(dcb));
+	dcb.DCBlength = sizeof(dcb);
+
+	/* Populate struct with defaults from windows */
+	GetCommState((HANDLE) _get_osfhandle(fd), &dcb);
+
+	dcb.BaudRate = baud;
+	dcb.ByteSize = bits;
+
+	if(parity.contains("NONE", Qt::CaseInsensitive)) {
+		dcb.Parity = NOPARITY;
+		dcb.fParity = FALSE; /* Disabled */
+	} else if(parity.contains("ODD", Qt::CaseInsensitive)) {
+		dcb.Parity = ODDPARITY;
+		dcb.fParity = TRUE; /* Enabled */
+	} else if(parity.contains("EVEN", Qt::CaseInsensitive)) {
+	    dcb.Parity = EVENPARITY;
+		dcb.fParity = TRUE; /* Enabled */
+	}
+
+//	switch (parity)
+//	{
+//	case NONE:
+//		dcb.Parity = NOPARITY;
+//		dcb.fParity = FALSE; /* Disabled */
+//		break;
+//	case ODD:
+//		dcb.Parity = ODDPARITY;
+//		dcb.fParity = TRUE; /* Enabled */
+//		break;
+//	case EVEN:
+//		dcb.Parity = EVENPARITY;
+//		dcb.fParity = TRUE; /* Enabled */
+//		break;
+//	}
+
+	if (stop == 2)
+		dcb.StopBits = TWOSTOPBITS; /* #defined in windows.h */
+	else
+		dcb.StopBits = ONESTOPBIT; /* #defined in windows.h */
+
+	dcb.fBinary = TRUE; /* Enable binary mode */
+	dcb.fOutxCtsFlow = FALSE; /* don't monitor CTS line */
+	dcb.fOutxDsrFlow = FALSE; /* don't monitor DSR line */
+	dcb.fDsrSensitivity = FALSE; /* ignore Dsr line */
+	dcb.fDtrControl = DTR_CONTROL_DISABLE; /* Disable DTR line */
+	dcb.fRtsControl = RTS_CONTROL_DISABLE; /* Disable RTS line */
+	dcb.fOutX = FALSE; /* Disable Xoff */
+	dcb.fInX = FALSE; /* Disable Xin */
+	dcb.fErrorChar = FALSE; /* Don't replace bad chars */
+	dcb.fNull = FALSE; /* don't drop NULL bytes */
+	dcb.fAbortOnError = FALSE; /* Don't abort */
+	dcb.wReserved = FALSE; /* as per msdn */
+
+	/* Set the port properties and write the string out the port. */
+	if(SetCommState((HANDLE) _get_osfhandle (fd) ,&dcb) == 0)
+		printf(__FILE__": win32_setup_serial_params()\n\tERROR setting serial attributes\n");
+
+	/* Set timeout params in a fashion that mimics linux behavior */
+
+	GetCommTimeouts((HANDLE) _get_osfhandle (fd), &timeouts);
+	/*
+	 if (baud == 112500)
+	 timeouts.ReadTotalTimeoutConstant    = 250;
+	 else
+	 timeouts.ReadTotalTimeoutConstant    = 100;
+	 timeouts.ReadTotalTimeoutMultiplier  = 1;
+	 timeouts.WriteTotalTimeoutMultiplier = 1;
+	 timeouts.WriteTotalTimeoutConstant   = 25;
+	 */
+
+	timeouts.ReadIntervalTimeout = 0;
+	timeouts.ReadTotalTimeoutConstant = 100;
+	timeouts.ReadTotalTimeoutMultiplier = 1;
+	timeouts.WriteTotalTimeoutConstant = 100;
+	timeouts.WriteTotalTimeoutMultiplier = 1;
+
+	SetCommTimeouts((HANDLE) _get_osfhandle (fd) ,&timeouts);
+
+	res = WSAStartup(MAKEWORD(2,2), &wsaData);
+	if (res != 0) {
+		//printf(_("WSAStartup failed: %d\n"),res);
+		printf("WSAStartup failed: %d\n", res);
+	}
+	return;
+
+}
+#endif
+
 SerialIO::SerialIO(): asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_writeBuffer), m_readBuffer(8196), m_writeBuffer(8196) {
 	TXBytesLeft = 0;
 	m_isCommunicating = false;
@@ -32,7 +129,7 @@ SerialIO::~SerialIO() {
 
 int IPDS::SerialIO::setupPort(int baudrate, int databits, const QString& parity, int stop) {
 #ifdef __WIN32__
-	win32_setup_serial_params(_fd, baud, 8, NONE, 1);
+	win32_cfg_serial(m_FD, baudrate, 8, parity, stop);
 	return 0;
 #else
 	   struct termios newtio;
@@ -215,7 +312,7 @@ int IPDS::SerialIO::setupPort(int baudrate, int databits, const QString& parity,
 void IPDS::SerialIO::openPort(QString portName) {
 	m_portName = portName;
 	#ifdef __WIN32__
-	m_FD = open(port_name, O_RDWR | O_BINARY );
+	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_BINARY );
 #else
 	/* NON-block open, then turn to blocking via fcntl so it works
 	 nicely on linux and OS-X.  this MUST be done this way because
@@ -295,6 +392,10 @@ void IPDS::SerialIO::receivedRXPacket(payloadVector packet) {
 //}
 
 void IPDS::SerialIO::closePort() { //maybe rename to shutdown
+#ifdef __WIN32__
+	close(m_FD);
+	return;
+#else
 	if (m_FD !=-1) {
 		tcsetattr(m_FD, TCSANOW, &m_oldtio);
 	}
@@ -317,6 +418,7 @@ void IPDS::SerialIO::closePort() { //maybe rename to shutdown
 	close(m_FD);
 	m_FD = -1;
 	qDebug() << "closed port";
+#endif
 }
 
 void IPDS::SerialIO::addByte(unsigned char& byte) {
@@ -384,4 +486,5 @@ void IPDS::SerialIO::run() {
 void IPDS::SerialIO::setDataMode(QString& mode) {
 	m_dataMode = mode;
 }
+
 } /* namespace IPDS */

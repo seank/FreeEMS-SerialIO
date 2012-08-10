@@ -48,6 +48,8 @@ INCLUDEPATH *= src/
 # Native Windows Build
 win32 { 
     message("Straight compile on windows")
+	CONFIG *= dll
+	DEFINES += QT_NODLL
     win32:LIBS *= -Lc:/mingw/lib \
         -lwsock32
 }

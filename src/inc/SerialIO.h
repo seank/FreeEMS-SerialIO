@@ -32,6 +32,14 @@
 #ifdef __WIN32__
   #include <io.h>
   #include <windows.h>
+
+  typedef enum
+  {
+	NONE,
+	ODD,
+	EVEN
+  }Parity;
+
 #else
   #include <termios.h> // POSIX terminal control definitions
   #include <sys/ioctl.h>
@@ -97,7 +105,9 @@ private:
 	IPDS::CircularBuffer m_writeBuffer;
 	QString m_dataMode;
 
-#ifndef __WIN32__
+#ifdef __WIN32__
+	void win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop);
+#else
 	struct termios m_oldtio;
 	struct termios m_newtio;
 #endif
