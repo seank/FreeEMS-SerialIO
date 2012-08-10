@@ -15,6 +15,13 @@
 #include <QWaitCondition>
 #include "inc/CircularBuffer.h"
 
+#ifdef __WIN32__
+  #include <io.h>
+  #include <windows.h>
+  #else
+  #include <termios.h> // POSIX terminal control definitions
+#endif
+
 #define TX_BUF_SIZE	0x2000 //8KB buffer TODO make global
 
 namespace IPDS {

@@ -19,6 +19,13 @@
 #include <QString>
 #include <QWaitCondition>
 
+#ifdef __WIN32__
+  #include <io.h>
+  #include <windows.h>
+  #else
+  #include <termios.h> // POSIX terminal control definitions
+#endif
+
 #define BAD_FD		0x10
 #define INVALID_FD	0x20
 
