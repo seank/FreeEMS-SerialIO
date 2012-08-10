@@ -25,17 +25,17 @@
 #include <errno.h>
 #include <unistd.h>
 #include <ctype.h>
-#include <sys/ioctl.h>
 #include <sys/time.h>
 #include <sys/types.h>
-#include <sys/select.h>
 #include <fcntl.h>
 
 #ifdef __WIN32__
   #include <io.h>
   #include <windows.h>
-  #else
+#else
   #include <termios.h> // POSIX terminal control definitions
+  #include <sys/ioctl.h>
+  #include <sys/select.h>
 #endif
 
 #define TX_BUF_SIZE	0x2000 //8KB buffer TODO make global
