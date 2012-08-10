@@ -22,5 +22,6 @@ extern QMutex g_readShutdownMutex;
 extern QMutex g_writeShutdownMutex;
 
 } /* namespace IPDS */
-
+#else
+#warning "GLOBALS_H_ already defined sort it out!"
 #endif /* GLOBALS_H_ */

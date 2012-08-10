@@ -13,45 +13,41 @@ CONFIG *= qt \
     debug
 QT += core
 QT -= gui
-HEADERS += inc/AsyncRead.h \
-    inc/AsyncWrite.h \
-    inc/CircularBuffer.h \
-    inc/SerialIO.h \
-    inc/byteDefinitions.h \
-    inc/globals.h \
-    inc/types.h
-SOURCES += AsyncRead.cpp \
-    AsyncWrite.cpp \
-    CircularBuffer.cpp \
-    SerialIO.cpp \
-    globals.cpp
+HEADERS += src/inc/AsyncRead.h \
+    src/inc/AsyncWrite.h \
+    src/inc/CircularBuffer.h \
+    src/inc/SerialIO.h \
+    src/inc/byteDefinitions.h \
+    src/inc/globals.h \
+    src/inc/types.h
+SOURCES += src/AsyncRead.cpp \
+    src/AsyncWrite.cpp \
+    src/CircularBuffer.cpp \
+    src/SerialIO.cpp \
+    src/globals.cpp
 
 # Cross compilation
 win32-x-g++ { 
     message("Crosscompiling on Unix to Windows")
     INCLUDEPATH *= $$quote(/home/seank/work/workspaceCDT/asyncSerial/)
     QMAKE_CXXFLAGS -= -Werror
-#   /usr/local/i686-pc-mingw32/
 }
+
+# /usr/local/i686-pc-mingw32/
 # Straight Mac-OS (OS-X)
 mac { 
     message("Mac OS-X Build")
     unix:INCLUDEPATH *= /opt/local/include
 }
+
 # Straight Linux
-linux-g++ {
-	message("Straight Linux Build")
-#	unix:INCLUDEPATH += $$quote(/home/seank/work/workspaceCDT/asyncSerial/)
-}
+linux-g++:message("Straight Linux Build")
+INCLUDEPATH *= src/
+
+# unix:INCLUDEPATH += $$quote(/home/seank/work/workspaceCDT/asyncSerial/)
 # Native Windows Build
 win32 { 
     message("Straight compile on windows")
-    INCLUDEPATH *= $$quote(/home/seank/work/workspaceCDT/asyncSerial/)
-#    INCLUDEPATH *= $$quote(/usr/include/i386-linux-gnu/)
-#    INCLUDEPATH *= $$quote(/usr/include/)
-	INCLUDEPATH *= $$quote(/home/seank/work/workspaceCDT/mxe/usr/i686-pc-mingw32/include/)
-    
     win32:LIBS *= -Lc:/mingw/lib \
         -lwsock32
 }
-    
