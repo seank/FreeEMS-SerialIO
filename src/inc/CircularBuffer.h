@@ -9,7 +9,7 @@
 #define CIRCULARBUFFER_H_
 
 #include <QVector>
-#include "inc/types.h"
+#include "inc/public/serialIO-types.h"
 //for debug
 #include <QDebug>
 

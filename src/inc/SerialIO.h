@@ -14,7 +14,7 @@
 #include <string>
 #include <inc/AsyncRead.h>
 #include <inc/AsyncWrite.h>
-#include <inc/types.h>
+#include <inc/public/serialIO-types.h>
 //#include <inc/CircularBuffer.h>
 #include <QObject>
 #include <QString>

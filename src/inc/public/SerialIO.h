@@ -71,8 +71,8 @@ public:
 	void communicate();
 	void closePort();
 	void run();
-	IPDS::AsyncRead asyncReader;
-	IPDS::AsyncWrite asyncWriter;
+//	IPDS::AsyncRead asyncReader;
+//	IPDS::AsyncWrite asyncWriter;
 	void writeString(QString&);
 
 signals:

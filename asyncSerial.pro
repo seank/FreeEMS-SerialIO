@@ -13,13 +13,13 @@ CONFIG *= qt \
     debug
 QT += core
 QT -= gui
-HEADERS += src/inc/AsyncRead.h \
+HEADERS += src/inc/public/serialIO-types.h \
+    src/inc/AsyncRead.h \
     src/inc/AsyncWrite.h \
     src/inc/CircularBuffer.h \
     src/inc/SerialIO.h \
     src/inc/byteDefinitions.h \
-    src/inc/globals.h \
-    src/inc/types.h
+    src/inc/globals.h
 SOURCES += src/AsyncRead.cpp \
     src/AsyncWrite.cpp \
     src/CircularBuffer.cpp \
@@ -48,8 +48,8 @@ INCLUDEPATH *= src/
 # Native Windows Build
 win32 { 
     message("Straight compile on windows")
-	CONFIG *= dll
-	DEFINES += QT_NODLL
+    CONFIG *= dll
+    DEFINES += QT_NODLL
     win32:LIBS *= -Lc:/mingw/lib \
         -lwsock32
 }
