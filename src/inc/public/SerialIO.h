@@ -14,13 +14,16 @@
 //#include <string>
 //#include <inc/AsyncRead.h>
 //#include <inc/AsyncWrite.h>
-//#include <inc/types.h>
-//#include <inc/CircularBuffer.h>
+#include </home/seank/work/workspaceCDT/asyncSerial/src/inc/public/serialIO-types.h>
+
+//#include <CircularBuffer.h>
+
 //#include <QObject>
 //#include <QString>
 //#include <QWaitCondition>
 //#include <QVector>
 //#include <QMetaType>
+//#include <QMutex>
 
 //#include <errno.h>
 //#include <unistd.h>
@@ -46,7 +49,7 @@
 //  #include <sys/select.h>
 //#endif
 //
-//#define TX_BUF_SIZE	0x2000 //8KB buffer TODO make global
+//#define TX_BUF_SIZE 	0x2000 //8KB buffer TODO make global
 //
 //typedef unsigned int speet_t;
 
@@ -71,8 +74,6 @@ public:
 	void communicate();
 	void closePort();
 	void run();
-//	IPDS::AsyncRead asyncReader;
-//	IPDS::AsyncWrite asyncWriter;
 	void writeString(QString&);
 
 signals:
@@ -88,29 +89,6 @@ public slots:
 	void receivedRXPacket(payloadVector);
 	void processTXError(int);
 
-//private:
-//	bool m_isOpen;
-//	bool m_isConfigured;
-//	bool m_isCommunicating;
-//	bool m_isStreaming;
-//	int m_FD;
-//	int m_numBytesExpected;
-//	int m_numBytesProcessed;
-//	unsigned int m_readBlockMS; //number of ms to block while waiting for a byte
-//	QString m_portName;
-//	unsigned char TXBuffer[TX_BUF_SIZE];
-//	unsigned int TXBytesLeft;
-//	QMutex m_readMutex;
-//	IPDS::CircularBuffer m_readBuffer;
-//	IPDS::CircularBuffer m_writeBuffer;
-//	QString m_dataMode;
-
-//#ifdef __WIN32__
-//	void win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop);
-//#else
-//	struct termios m_oldtio;
-//	struct termios m_newtio;
-//#endif
 };
 
 } /* namespace IPDS */
