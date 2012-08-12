@@ -46,7 +46,7 @@
   #include <sys/select.h>
 #endif
 
-#define TX_BUF_SIZE	0x2000 //8KB buffer TODO make global
+#define TX_BUF_SIZE		0x2000 //8KB buffer TODO make global
 
 typedef unsigned int speet_t;
 
@@ -71,8 +71,6 @@ public:
 	void communicate();
 	void closePort();
 	void run();
-	IPDS::AsyncRead asyncReader;
-	IPDS::AsyncWrite asyncWriter;
 	void writeString(QString&);
 
 signals:
@@ -89,6 +87,8 @@ public slots:
 	void processTXError(int);
 
 private:
+	IPDS::AsyncRead asyncReader;
+	IPDS::AsyncWrite asyncWriter;
 	bool m_isOpen;
 	bool m_isConfigured;
 	bool m_isCommunicating;
