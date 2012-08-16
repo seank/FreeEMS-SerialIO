@@ -13,7 +13,7 @@ CONFIG *= qt \
     debug
 QT += core
 QT -= gui
-PUBLIC_HEADERS += src/inc/public/SerialIO.h
+PUBLIC_HEADERS += src/inc/public/SerialIO.h src/inc/public/SerialIO-types.h
 HEADERS += src/inc/SerialIO_p.h \ 
 	src/inc/AsyncRead.h \
     src/inc/AsyncWrite.h \
@@ -55,7 +55,7 @@ win32 {
 }
 unix { 
     target.path = $$INSTALL_ROOT/usr/local/lib
-    headers.files = src/inc/public/SerialIO.h
+    headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/include
 }
 INSTALLS += target \

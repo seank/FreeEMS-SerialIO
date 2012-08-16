@@ -8,29 +8,15 @@
 #ifndef SERIALIOP_H_
 #define SERIALIOP_H_
 
-#include <stdio.h> //for printf
+/* System Includes */
 #include <fcntl.h>
-#include <string.h> // for memset
-#include <string>
-#include <inc/AsyncRead.h>
-#include <inc/AsyncWrite.h>
 
-#include "inc/public/serialIO-types.h"
+/* Local Includes */
+#include "inc/AsyncRead.h"
+#include "inc/AsyncWrite.h"
 #include "inc/public/SerialIO.h"
-//#include <inc/CircularBuffer.h>
-#include <QObject>
-#include <QString>
-#include <QWaitCondition>
-#include <QVector>
-#include <QMetaType>
 
-#include <errno.h>
-#include <unistd.h>
-#include <ctype.h>
-#include <sys/time.h>
-#include <sys/types.h>
-#include <fcntl.h>
-
+/* Conditional Includes */
 #ifdef __WIN32__
   #include <io.h>
   #include <windows.h>
