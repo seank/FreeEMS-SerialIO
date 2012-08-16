@@ -13,7 +13,9 @@ CONFIG *= qt \
     debug
 QT += core
 QT -= gui
+
 PUBLIC_HEADERS += src/inc/public/SerialIO.h src/inc/public/SerialIO-types.h
+
 HEADERS += src/inc/SerialIO_p.h \ 
 	src/inc/AsyncRead.h \
     src/inc/AsyncWrite.h \
@@ -29,34 +31,32 @@ SOURCES += src/AsyncRead.cpp \
 # Cross compilation
 win32-x-g++ { 
     message("Crosscompiling on Unix to Windows")
-    INCLUDEPATH *= $$quote(/home/seank/work/workspaceCDT/asyncSerial/)
+    INCLUDEPATH *= src/
     QMAKE_CXXFLAGS -= -Werror
 }
 
-# /usr/local/i686-pc-mingw32/
 # Straight Mac-OS (OS-X)
 mac { 
     message("Mac OS-X Build")
     unix:INCLUDEPATH *= /opt/local/include
 }
 
-# Straight Linux
-linux-g++:message("Straight Linux Build")
-INCLUDEPATH *= src/
-
-# unix:INCLUDEPATH += $$quote(/home/seank/work/workspaceCDT/asyncSerial/)
 # Native Windows Build
 win32 { 
     message("Straight compile on windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
+    INCLUDEPATH *= src/
     win32:LIBS *= -Lc:/mingw/lib \
         -lwsock32
 }
-unix { 
+
+# Straight Linux
+linux-g++ { 
+	message("Straight Linux Build")
+	INCLUDEPATH *= src/
     target.path = $$INSTALL_ROOT/usr/local/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/include
+    INSTALLS += target headers
 }
-INSTALLS += target \
-    headers
