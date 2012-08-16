@@ -5,12 +5,12 @@
  *      Author: seank
  */
 
-#include "inc/SerialIO.h"
+#include "inc/SerialIO_p.h"
 
 namespace IPDS {
 
 #ifdef __WIN32__
-void IPDS::SerialIO::win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop)
+void IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop)
 {
 	DCB dcb;
 	WSADATA wsaData;
@@ -106,7 +106,7 @@ void IPDS::SerialIO::win32_cfg_serial(unsigned int fd, int baud, int bits, QStri
 }
 #endif
 
-SerialIO::SerialIO(): asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_writeBuffer), m_readBuffer(8196), m_writeBuffer(8196) {
+SerialIOPrivate::SerialIOPrivate(): asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_writeBuffer), m_readBuffer(8196), m_writeBuffer(8196) {
 	TXBytesLeft = 0;
 	m_isCommunicating = false;
 	m_isConfigured = false;
@@ -123,11 +123,11 @@ SerialIO::SerialIO(): asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_w
 	QObject::connect(&asyncWriter, SIGNAL( TXError(int)), this, SLOT( processTXError(int) ));
 }
 
-SerialIO::~SerialIO() {
+SerialIOPrivate::~SerialIOPrivate() {
 	// TODO Auto-generated destructor stub
 }
 
-int IPDS::SerialIO::setupPort(int baudrate, int databits, const QString& parity, int stop) {
+int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& parity, int stop) {
 #ifdef __WIN32__
 	win32_cfg_serial(m_FD, baudrate, 8, parity, stop);
 	return 0;
@@ -309,7 +309,7 @@ int IPDS::SerialIO::setupPort(int baudrate, int databits, const QString& parity,
 	   return 1;
 }
 
-void IPDS::SerialIO::openPort(QString portName) {
+void IPDS::SerialIOPrivate::openPort(QString portName) {
 	m_portName = portName;
 	#ifdef __WIN32__
 	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_BINARY );
@@ -331,15 +331,15 @@ void IPDS::SerialIO::openPort(QString portName) {
 	m_isCommunicating = m_isOpen;
 }
 
-bool IPDS::SerialIO::isOpen() {
+bool IPDS::SerialIOPrivate::isOpen() {
 	return m_isOpen;
 }
 
-bool IPDS::SerialIO::isCommunicating() {
+bool IPDS::SerialIOPrivate::isCommunicating() {
 	return m_isCommunicating;
 }
 
-void IPDS::SerialIO::communicate() {
+void IPDS::SerialIOPrivate::communicate() {
 	if(m_isOpen) {
 		//asyncReader.m_communicating = &_isCommunicating;
 		//asyncWriter._communicating = &_isCommunicating;
@@ -350,7 +350,7 @@ void IPDS::SerialIO::communicate() {
 	}
 }
 
-void IPDS::SerialIO::processRXError(int RXErrorNumber) {
+void IPDS::SerialIOPrivate::processRXError(int RXErrorNumber) {
 	//TODO act appropriately for the error for now just terminate
 	printf("RX Error %i \n", RXErrorNumber);
 	//if(RXErrorNumber == BAD_FD ||  RXErrorNumber == INVALID_FD) {
@@ -358,7 +358,7 @@ void IPDS::SerialIO::processRXError(int RXErrorNumber) {
 	//}
 }
 
-void IPDS::SerialIO::processTXError(int RXErrorNumber) {
+void IPDS::SerialIOPrivate::processTXError(int RXErrorNumber) {
 	//TODO act appropriately for the error for now just terminate
 	printf("TX Error %i \n", RXErrorNumber);
 	//if(RXErrorNumber == BAD_FD ||  RXErrorNumber == INVALID_FD) {
@@ -366,7 +366,7 @@ void IPDS::SerialIO::processTXError(int RXErrorNumber) {
 	//}
 }
 
-void IPDS::SerialIO::receivedRXBlock(payloadVector payload) {
+void IPDS::SerialIOPrivate::receivedRXBlock(payloadVector payload) {
 	qDebug() << "RXblock callback answered";
 	qDebug() << payload;
 
@@ -375,7 +375,7 @@ void IPDS::SerialIO::receivedRXBlock(payloadVector payload) {
 	writeData(&test, 1);
 }
 
-void IPDS::SerialIO::receivedRXPacket(payloadVector packet) {
+void IPDS::SerialIOPrivate::receivedRXPacket(payloadVector packet) {
 //	packet.push_back('h');
 //	m_readBuffer.fillVector(test, head, tail);
 	qDebug() << "SerialIO RXPacket callback answered";
@@ -387,11 +387,11 @@ void IPDS::SerialIO::receivedRXPacket(payloadVector packet) {
 //	writeData(&test, 1);
 }
 
-//void IPDS::SerialIO::flushRX() {
+//void IPDS::SerialIOPrivate::flushRX() {
 //	asyncReader.m_readBuffer->flush();
 //}
 
-void IPDS::SerialIO::closePort() { //maybe rename to shutdown
+void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 #ifdef __WIN32__
 	close(m_FD);
 	return;
@@ -421,7 +421,7 @@ void IPDS::SerialIO::closePort() { //maybe rename to shutdown
 #endif
 }
 
-void IPDS::SerialIO::addByte(unsigned char& byte) {
+void IPDS::SerialIOPrivate::addByte(unsigned char& byte) {
 	m_readBuffer.pushByte(byte);
 	m_numBytesProcessed++;
 	if (m_numBytesExpected == m_numBytesProcessed) {
@@ -433,7 +433,7 @@ void IPDS::SerialIO::addByte(unsigned char& byte) {
 	}
 }
 
-void IPDS::SerialIO::writeData(const void* data, size_t bufferSize) {
+void IPDS::SerialIOPrivate::writeData(const void* data, size_t bufferSize) {
 	qDebug() << "Performing a write";
 	unsigned int i;
 	for(i = 0; bufferSize > i; i++) {
@@ -442,15 +442,15 @@ void IPDS::SerialIO::writeData(const void* data, size_t bufferSize) {
 	g_writeBlock.wakeAll();
 }
 
-void IPDS::SerialIO::setMode(QString& mode) {
+void IPDS::SerialIOPrivate::setMode(QString& mode) {
 	asyncReader.setMode(mode);
 }
 
-void IPDS::SerialIO::flushRX() {
+void IPDS::SerialIOPrivate::flushRX() {
 	asyncReader.flush();
 }
 
-int IPDS::SerialIO::readData(unsigned char* buf, size_t numBytes) {
+int IPDS::SerialIOPrivate::readData(unsigned char* buf, size_t numBytes) {
 //	qDebug("Performing a read...");
 	unsigned int i;
 	unsigned int lastNumBytes;
@@ -478,12 +478,12 @@ int IPDS::SerialIO::readData(unsigned char* buf, size_t numBytes) {
 	return numBytes;
 }
 
-void IPDS::SerialIO::run() {
+void IPDS::SerialIOPrivate::run() {
 	//TODO make signal and slot connections if this object proves to be useful running in its own thread
 	exec();
 }
 
-void IPDS::SerialIO::setDataMode(QString& mode) {
+void IPDS::SerialIOPrivate::setDataMode(QString& mode) {
 	m_dataMode = mode;
 }
 

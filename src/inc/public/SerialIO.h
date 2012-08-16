@@ -14,7 +14,7 @@
 //#include <string>
 //#include <inc/AsyncRead.h>
 //#include <inc/AsyncWrite.h>
-#include </home/seank/work/workspaceCDT/asyncSerial/src/inc/public/serialIO-types.h>
+#include "serialIO-types.h"
 
 //#include <CircularBuffer.h>
 

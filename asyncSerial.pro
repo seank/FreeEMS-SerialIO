@@ -13,12 +13,11 @@ CONFIG *= qt \
     debug
 QT += core
 QT -= gui
-
-PUBLIC_HEADERS += src/inc/public/SerialIO.h 
-HEADERS += src/inc/AsyncRead.h \
+PUBLIC_HEADERS += src/inc/public/SerialIO.h
+HEADERS += src/inc/SerialIO_p.h \ 
+	src/inc/AsyncRead.h \
     src/inc/AsyncWrite.h \
     src/inc/CircularBuffer.h \
-    src/inc/SerialIO.h \
     src/inc/byteDefinitions.h \
     src/inc/globals.h
 SOURCES += src/AsyncRead.cpp \
@@ -54,11 +53,10 @@ win32 {
     win32:LIBS *= -Lc:/mingw/lib \
         -lwsock32
 }
-
-unix {
-	target.path = $$INSTALL_ROOT/usr/local/lib
-	headers.files = src/inc/public/SerialIO.h
-	headers.path = $$INSTALL_ROOT/usr/local/include
+unix { 
+    target.path = $$INSTALL_ROOT/usr/local/lib
+    headers.files = src/inc/public/SerialIO.h
+    headers.path = $$INSTALL_ROOT/usr/local/include
 }
-
-INSTALLS += target headers
+INSTALLS += target \
+    headers

@@ -5,8 +5,8 @@
  *      Author: seank
  */
 
-#ifndef SERIALIO_H_
-#define SERIALIO_H_
+#ifndef SERIALIOP_H_
+#define SERIALIOP_H_
 
 #include <stdio.h> //for printf
 #include <fcntl.h>
@@ -14,7 +14,9 @@
 #include <string>
 #include <inc/AsyncRead.h>
 #include <inc/AsyncWrite.h>
-#include <inc/public/serialIO-types.h>
+
+#include "inc/public/serialIO-types.h"
+#include "inc/public/SerialIO.h"
 //#include <inc/CircularBuffer.h>
 #include <QObject>
 #include <QString>
@@ -52,11 +54,11 @@ typedef unsigned int speet_t;
 
 namespace IPDS {
 
-class SerialIO: public QThread {
+class SerialIOPrivate: public QThread {
 	Q_OBJECT
 public:
-	SerialIO();
-	virtual ~SerialIO();
+	SerialIOPrivate();
+	virtual ~SerialIOPrivate();
 	int setupPort(int baud, int databits, const QString& parity, int stop); //TODO change this to a struct will FULL parameters
 	void flushRX();
 	void setMode(QString& mode);
@@ -115,5 +117,5 @@ private:
 
 } /* namespace IPDS */
 #else
-#warning "SERIALIO_H_ already defined sort it out!"
-#endif /* SERIALIO_H_ */
+#warning "SERIALIOP_H_ already defined sort it out!"
+#endif /* SERIALIOP_H_ */
