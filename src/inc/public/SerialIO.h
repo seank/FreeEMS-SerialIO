@@ -8,7 +8,7 @@
 #ifndef SERIALIO_H_
 #define SERIALIO_H_
 
-#include "serialIO-types.h"
+#include "SerialIO-types.h"
 
 namespace IPDS {
 class SerialIOPrivate;
