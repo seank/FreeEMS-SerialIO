@@ -31,8 +31,13 @@ SOURCES += src/AsyncRead.cpp \
 # Cross compilation
 win32-x-g++ { 
     message("Crosscompiling on Unix to Windows")
+    CONFIG *= dll
+    DEFINES += QT_NODLL
     INCLUDEPATH *= src/
-    QMAKE_CXXFLAGS -= -Werror
+    target.path = $$INSTALL_ROOT/usr/local/win32/lib
+    headers.files = $$PUBLIC_HEADERS
+    headers.path = $$INSTALL_ROOT/usr/local/win32/include
+    INSTALLS += target headers
 }
 
 # Straight Mac-OS (OS-X)
