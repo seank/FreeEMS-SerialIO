@@ -54,7 +54,7 @@
 //typedef unsigned int speet_t;
 
 namespace IPDS {
-
+class SerialIOPrivate;
 class SerialIO: public QThread {
 //	Q_OBJECT
 public:
@@ -88,6 +88,9 @@ public slots:
 	void receivedRXBlock(payloadVector);
 	void receivedRXPacket(payloadVector);
 	void processTXError(int);
+
+private:
+	SerialIOPrivate* d;
 
 };
 
