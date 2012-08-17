@@ -8,7 +8,7 @@
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
 
-#include "../../inc/SerialIO.h"
+#include "../../src/inc/public/SerialIO.h"
 
 IPDS::SerialIO *serialConnection;
 

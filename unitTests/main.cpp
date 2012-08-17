@@ -23,10 +23,11 @@ int main(int argc, char *argv[]) {
 			qDebug() << "Uknown arg:" << args.at(i);
 		}
 	}
-	if(portName.isEmpty()) {
+	if(portName == "--port=") {
 		qDebug() << "Error: you must specify a serial port, eg. --port=/dev/ttyUSB0" << endl;
+		return -1;
 	}
-
+	qDebug() << portName;
 	serialConnection->openPort(portName);
 	serialConnection->setupPort(115200, 8, "none", 1); // SM
 	if (serialConnection->isOpen() == true) {
@@ -64,7 +65,7 @@ void FreeEMSPacketCounter() {
 //	unsigned long numPackets = 0;
 //	unsigned long numBadPackets = 0;
 	QString mode = "FREEEMS";
-	serialConnection->setupPort(115200, 8, "none", 1); // SM
+	serialConnection->setupPort(115200, 8, "odd", 1); // SM
 	serialConnection->communicate();
 	serialConnection->setDataMode(mode);
 
