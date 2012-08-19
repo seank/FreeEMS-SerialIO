@@ -5,12 +5,15 @@ HEADERS += inc/asyncUnitTesting.h \
     inc/asyncUnitTesting.h \
     inc/globals.h \
     inc/globals.h
-SOURCES += main.cpp
+SOURCES += smTestStats.cpp \
+    smTestStats.cpp \
+    main.cpp
 FORMS += 
 RESOURCES += 
 VERSION = 0.0.1
-#QMAKE_CXXFLAGS *= -Wall
-#QMAKE_CXXFLAGS *= -Werror
+
+# QMAKE_CXXFLAGS *= -Wall
+# QMAKE_CXXFLAGS *= -Werror
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
 

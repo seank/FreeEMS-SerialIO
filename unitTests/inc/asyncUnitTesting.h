@@ -10,5 +10,6 @@
 
 
 extern void smPingTest();
+void printSMResults();
 
 #endif /* ASYNCUNITTESTING_H_ */
