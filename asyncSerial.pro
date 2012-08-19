@@ -14,6 +14,13 @@ CONFIG *= qt \
 QT += core
 QT -= gui
 
+CONFIG(debug, debug|release) {
+
+} else {
+	DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT
+	message("Building Release Version")
+}
+
 PUBLIC_HEADERS += src/inc/public/SerialIO.h src/inc/public/SerialIO-types.h
 
 HEADERS += src/inc/SerialIO_p.h \ 
