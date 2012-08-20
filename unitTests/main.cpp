@@ -96,7 +96,6 @@ void FreeEMSPacketCounter() {
 	while (1) {
 
 	}
-
 }
 
 void printSMResults() {
@@ -111,5 +110,4 @@ void printSMResults() {
 	cout << endl;
 	cout << "Success Rate = " << (double)smTestStats.acksRX / smTestStats.numChecks << endl;
 
-	return;
 }
