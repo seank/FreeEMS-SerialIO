@@ -65,7 +65,7 @@ void smPingTest() {
 		serialConnection->writeData(&enableSM, 1);
 		bytesRead = serialConnection->readData(&rxData[0], 3);
 		if(bytesRead == 3) {
-			qDebug() << "Sent one byte and recieved three bytes in" << roundTrip.elapsed() << "msec(s)";
+			qDebug() << "Sent one byte and received three bytes in " << roundTrip.elapsed() << " msec(s)";
 			if (((rxData[0] == 0xE1) || (rxData[0] == 0xE0)) && (rxData[2] == 0x3E)) {
 				smTestStats.acksRX++;
 				if (rxData[1] == 8)
@@ -75,7 +75,7 @@ void smPingTest() {
 			qDebug() << " read " << rxData[0] << rxData[1] << rxData[2] << endl;
 			}
 		} else {
-			qDebug() << "Read came up short, expected 3 but read " << bytesRead << "in " << roundTrip.elapsed()
+			qDebug() << "Read came up short, expected 3 but read " << bytesRead << " in " << roundTrip.elapsed()
 					<< " msec(s)";
 			smTestStats.acksMissed++;
 			/* flush rx buffer so the next iteration has a fresh start */
