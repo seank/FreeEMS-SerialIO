@@ -4,7 +4,7 @@
 gmon.out
 *.o
 moc*
-unitTests/asyncUnitTesting
+functionalTests/asyncFunctionalTesting
 Makefile
 Makefile.Debug
 Makefile.Release

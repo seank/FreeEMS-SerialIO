@@ -1,8 +1,8 @@
 TEMPLATE = app
-TARGET = asyncUnitTesting
+TARGET = asyncFunctionalTesting
 QT += core
-HEADERS += inc/asyncUnitTesting.h \
-    inc/asyncUnitTesting.h \
+HEADERS += inc/asyncFunctionalTesting.h \
+    inc/asyncFunctionalTesting.h \
     inc/globals.h \
     inc/globals.h
 SOURCES += smTestStats.cpp \

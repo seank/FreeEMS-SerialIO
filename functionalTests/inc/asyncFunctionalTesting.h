@@ -11,5 +11,6 @@
 
 extern void smPingTest();
 void printSMResults();
+void FreeEMSPacketCounter();
 
 #endif /* ASYNCUNITTESTING_H_ */

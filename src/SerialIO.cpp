@@ -114,7 +114,6 @@ SerialIOPrivate::SerialIOPrivate(): asyncReader(&m_FD, &m_readBuffer), asyncWrit
 	m_numBytesExpected = 1;
 	m_readBlockMS = 2000; //default to 2000ms before read() times out
 	QString mode = "FREEEMS";
-	//QString mode = "RAW";
 	asyncReader.setMode(mode);
 	/* setup signals and slots */
 	qRegisterMetaType<payloadVector>("payloadVector");

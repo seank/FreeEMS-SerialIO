@@ -4,7 +4,7 @@
 #include <QCoreApplication>
 #include <QDebug>
 
-#include "inc/asyncUnitTesting.h"
+#include "inc/asyncFunctionalTesting.h"
 #include "inc/globals.h"
 #include "smTestStats.cpp"
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 	/* list of valid arguments */
     QString portName("--port=");
 
-    smTestStats.numChecks = 10000;
+    smTestStats.numChecks = 500000;
 
 	for (int i = 1; i < args.size(); ++i) {
 		argument = args.at(i);
@@ -46,6 +46,7 @@ int main(int argc, char *argv[]) {
 		qDebug() << "error port not open";
 	}
 	smPingTest();
+	//FreeEMSPacketCounter();
 	printSMResults();
 	return a.exec();
 }
@@ -57,7 +58,8 @@ void smPingTest() {
 	unsigned int bytesRead;
 	unsigned int numRuns = smTestStats.numChecks;
 	QElapsedTimer roundTrip;
-
+	QString mode = "RAW";
+	serialConnection->setDataMode(mode);
 	serialConnection->setupPort(115200, 8, "none", 1); // SM
 	serialConnection->communicate();
 	while (numRuns) {
@@ -89,9 +91,9 @@ void FreeEMSPacketCounter() {
 //	unsigned long numPackets = 0;
 //	unsigned long numBadPackets = 0;
 	QString mode = "FREEEMS";
+	serialConnection->setDataMode(mode);
 	serialConnection->setupPort(115200, 8, "odd", 1); // SM
 	serialConnection->communicate();
-	serialConnection->setDataMode(mode);
 
 	while (1) {
 
