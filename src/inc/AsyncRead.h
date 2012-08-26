@@ -39,6 +39,7 @@ public:
 	void run();
 	void setExpectedBytes(unsigned int numBytes);
 	void setMode(QString& mode);
+	QString getMode();
 	void shutdownThread();
 	void flush();
 signals:

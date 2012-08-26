@@ -6,6 +6,7 @@
  */
 
 #include "inc/SerialIO_p.h"
+#include <iostream>
 
 namespace IPDS {
 
@@ -112,8 +113,8 @@ SerialIOPrivate::SerialIOPrivate(): asyncReader(&m_FD, &m_readBuffer), asyncWrit
 	m_isConfigured = false;
 	m_numBytesExpected = 1;
 	m_readBlockMS = 2000; //default to 2000ms before read() times out
-	//QString mode = "FREEEMS";
-	QString mode = "RAW";
+	QString mode = "FREEEMS";
+	//QString mode = "RAW";
 	asyncReader.setMode(mode);
 	/* setup signals and slots */
 	qRegisterMetaType<payloadVector>("payloadVector");
@@ -451,13 +452,16 @@ void IPDS::SerialIOPrivate::flushRX() {
 }
 
 int IPDS::SerialIOPrivate::readData(unsigned char* buf, size_t numBytes) {
-//	qDebug("Performing a read...");
+	if (asyncReader.getMode() != "RAW") {
+		std::cout << "Error: you cannot perform a read() while in FreeEMS packet mode " << std::endl;
+	}
+	qDebug("Performing a read...");
 	unsigned int i;
 	unsigned int lastNumBytes;
 	unsigned int currentNumBytes;
 	for (i = 0, lastNumBytes = 0, currentNumBytes = 0;
 			numBytes > (currentNumBytes = m_readBuffer.bufferSize());) {
-//		qDebug("buffer smaller than requested(have %i but need %i) read size waiting....", m_readBuffer.bufferSize(), numBytes);
+		qDebug("buffer smaller than requested(have %i but need %i) read size waiting....", m_readBuffer.bufferSize(), numBytes);
 		g_readMutex.lock();
 		if (g_readBlock.wait(&g_readMutex, 1) == false) { // wait for 1ms or until we are woke up by a byte coming in
 			if (lastNumBytes == currentNumBytes) {
@@ -485,6 +489,7 @@ void IPDS::SerialIOPrivate::run() {
 
 void IPDS::SerialIOPrivate::setDataMode(QString& mode) {
 	m_dataMode = mode;
+	asyncReader.setMode(mode);
 }
 
 /* ############### WRAPPERS FOR PUBLIC INTERFACE ######### */

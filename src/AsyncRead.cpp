@@ -109,7 +109,7 @@ void IPDS::AsyncRead::processByte(unsigned char& byte) {
 				m_numPacketsRX++;
 				qDebug() << "END of packet detected";
 				m_readBuffer->fillPayload(payload);
-//				qDebug("size of packet is %i", m_readBuffer->bufferSize());
+				qDebug("size of packet is %i", m_readBuffer->bufferSize());
 				emit
 				RXPacket(payload);
 //				m_readBuffer->bufferBarf();
@@ -144,6 +144,10 @@ void IPDS::AsyncRead::setMode(QString& mode) {
 
 void IPDS::AsyncRead::flush() {
 	m_readBuffer->flush();
+}
+
+QString IPDS::AsyncRead::getMode() {
+	return m_mode;
 }
 
 } /* namespace IPDS */
