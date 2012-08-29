@@ -59,9 +59,6 @@ win32 {
     CONFIG *= dll
     DEFINES += QT_NODLL
     INCLUDEPATH *= src/
-    CONFIG *= dll
-    DEFINES += QT_NODLL
-    INCLUDEPATH *= src/
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
