@@ -328,7 +328,7 @@ void IPDS::SerialIOPrivate::openPort(QString portName) {
 
 #endif
 	m_isOpen = m_FD != -1 ? true : false;
-	m_isCommunicating = m_isOpen;
+	qDebug() << "openPort() called and open() returned " << m_FD;
 }
 
 bool IPDS::SerialIOPrivate::isOpen() {
@@ -346,18 +346,21 @@ void IPDS::SerialIOPrivate::communicate() {
 		g_readError = 0;
 		asyncReader.start();
 		asyncWriter.start();
+		m_isCommunicating = true;
 	} else {
 		printf("Error can't start port not open");
+		m_isCommunicating = false;
 	}
 }
 
 void IPDS::SerialIOPrivate::processRXError(int RXErrorNumber) {
 	//TODO act appropriately for the error for now just terminate
 	g_readError = RXErrorNumber;
-	printf("RX Error %i \n", RXErrorNumber);
 	//if(RXErrorNumber == BAD_FD ||  RXErrorNumber == INVALID_FD) {
-	closePort();
-	//}
+	if (m_isOpen) {
+		closePort();
+		printf("RX Error %i \n", RXErrorNumber);
+	}
 }
 
 void IPDS::SerialIOPrivate::processTXError(int RXErrorNumber) {
@@ -382,9 +385,7 @@ void IPDS::SerialIOPrivate::receivedRXPacket(payloadVector packet) {
 //	m_readBuffer.fillVector(test, head, tail);
 	qDebug() << "SerialIO RXPacket callback answered";
 	qDebug() << packet;
-
 	emit readPacketFinished(packet);
-
 //	unsigned char test = 0x0d;
 //	writeData(&test, 1);
 }
@@ -398,26 +399,23 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 	close(m_FD);
 	return;
 #else
-	if (m_FD !=-1) {
-		tcsetattr(m_FD, TCSANOW, &m_oldtio);
-	}
 	m_isCommunicating = false;
 	m_isOpen = false;
 	qDebug() << "Waiting for threads to finish";
 	if (asyncWriter.isRunning()) {
 		asyncWriter.shutdownThread();
 		asyncWriter.wait();
+		qDebug() << "asyncWriter thread stopped";
 	}
 	if (asyncReader.isRunning()) {
 		asyncReader.terminate();
-		//asyncReader.shutdownThread();
-		//asyncReader.wait(); //wait 10ms
-		//if(asyncReader.isRunning()) {
-		//	asyncReader.terminate(); // if its still running kill it!
-		//}
+		qDebug() << "asyncReader thread stopped";
 	}
-	qDebug() << "Done waiting for threads";
+	if (m_FD !=-1) {
+		tcsetattr(m_FD, TCSANOW, &m_oldtio);
+	}
 	close(m_FD);
+	qDebug() << "Done waiting for threads";
 	m_FD = -1;
 	qDebug() << "closed port";
 #endif
