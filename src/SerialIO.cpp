@@ -343,6 +343,7 @@ void IPDS::SerialIOPrivate::communicate() {
 	if(m_isOpen) {
 		//asyncReader.m_communicating = &_isCommunicating;
 		//asyncWriter._communicating = &_isCommunicating;
+		g_readError = 0;
 		asyncReader.start();
 		asyncWriter.start();
 	} else {
@@ -352,6 +353,7 @@ void IPDS::SerialIOPrivate::communicate() {
 
 void IPDS::SerialIOPrivate::processRXError(int RXErrorNumber) {
 	//TODO act appropriately for the error for now just terminate
+	g_readError = RXErrorNumber;
 	printf("RX Error %i \n", RXErrorNumber);
 	//if(RXErrorNumber == BAD_FD ||  RXErrorNumber == INVALID_FD) {
 	closePort();
@@ -470,6 +472,8 @@ int IPDS::SerialIOPrivate::readData(unsigned char* buf, size_t numBytes) {
 			}
 		}
 		g_readMutex.unlock();
+		if (g_readError)
+			return g_readError;
 		if (i > m_readBlockMS) { //TODO make configurable
 			qDebug() << "Read Incomplete: We timed out, readData() is returning " <<  currentNumBytes << " of"
 					<< numBytes << " requested bytes";

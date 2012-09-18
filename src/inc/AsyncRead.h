@@ -26,9 +26,6 @@
   #include <termios.h> // POSIX terminal control definitions
 #endif
 
-#define BAD_FD		0x10
-#define INVALID_FD	0x20
-
 namespace IPDS {
 
 class AsyncRead: public QThread {

@@ -63,6 +63,7 @@ void IPDS::AsyncRead::run() {
 		if (*m_FD == -1) {
 			//file descriptor went bad on us
 			qDebug() << "HES DEAD JIM, PORT DIED";
+			emit RXError(INVALID_FD);
 			return; //terminate thread
 			//emit RXError(INVALID_FD);
 		} else {

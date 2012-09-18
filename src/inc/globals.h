@@ -13,6 +13,9 @@
 
 namespace IPDS {
 
+#define BAD_FD		-0x10
+#define INVALID_FD	-0x20
+
 extern QWaitCondition g_readBlock;
 extern QWaitCondition g_writeBlock;
 //extern QWaitCondition g_busyReading;
@@ -20,6 +23,7 @@ extern QWaitCondition g_writeBlock;
 extern QMutex g_readMutex;
 extern QMutex g_readShutdownMutex;
 extern QMutex g_writeShutdownMutex;
+extern int g_readError;
 
 } /* namespace IPDS */
 #else
