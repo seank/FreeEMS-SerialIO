@@ -15,7 +15,7 @@ QT += core
 QT -= gui
 
 CONFIG(debug, debug|release) {
-
+	message("Building Debug Version, expect spew!")
 } else {
 	DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT
 	message("Building Release Version")
