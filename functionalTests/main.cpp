@@ -15,14 +15,14 @@ smTestStats smTestStats;
 int main(int argc, char *argv[]) {
 	QCoreApplication a(argc, argv);
 	serialConnection = new IPDS::SerialIO;
-	QCoreApplication app(argc, argv);
-	QStringList args = app.arguments();
+//	QCoreApplication app(argc, argv);
+	QStringList args = a.arguments();
 	QString argument;
 	/* list of valid arguments */
     QString portName("--port=");
 
-    smTestStats.numChecks = 500000;
-
+    smTestStats.numChecks = 5000;
+    printf("\n Parsing arguments");
 	for (int i = 1; i < args.size(); ++i) {
 		argument = args.at(i);
 		if (argument.startsWith(portName)) {
