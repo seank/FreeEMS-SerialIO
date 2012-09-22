@@ -65,7 +65,7 @@ win32 {
     INSTALLS += target headers
 #    win32:LIBS *= -Lc:/mingw/lib \
     LIBS *= -lwsock32
-    QMAKE_LFLAGS += -enable-auto-import
+#    QMAKE_LFLAGS += -enable-auto-import
 }
 
 # Straight Linux
