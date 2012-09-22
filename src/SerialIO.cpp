@@ -39,22 +39,6 @@ int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits,
 		dcb.fParity = TRUE; /* Enabled */
 	}
 
-//	switch (parity)
-//	{
-//	case NONE:
-//		dcb.Parity = NOPARITY;
-//		dcb.fParity = FALSE; /* Disabled */
-//		break;
-//	case ODD:
-//		dcb.Parity = ODDPARITY;
-//		dcb.fParity = TRUE; /* Enabled */
-//		break;
-//	case EVEN:
-//		dcb.Parity = EVENPARITY;
-//		dcb.fParity = TRUE; /* Enabled */
-//		break;
-//	}
-
 	if (stop == 2)
 		dcb.StopBits = TWOSTOPBITS; /* #defined in windows.h */
 	else
@@ -123,7 +107,7 @@ SerialIOPrivate::~SerialIOPrivate() {
 
 int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& parity, int stop) {
 #ifdef __WIN32__
-	if (win32_cfg_serial(m_FD, baudrate, 8, parity, stop) != 0) {
+	if (win32_cfg_serial(m_FD, baudrate, databits, parity, stop) != 0) {
 		qDebug() << "problem configuring port in windows";
 		return -1;
 	} else {
