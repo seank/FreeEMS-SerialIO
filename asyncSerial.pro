@@ -1,6 +1,5 @@
 TEMPLATE = lib
-TARGET = asyncSerial
-VERSION = 0.0.1
+VERSION = 0.1.0
 TARGET = SerialIO
 QMAKE_CXXFLAGS *= -Wall
 QMAKE_CXXFLAGS *= -Werror
@@ -57,20 +56,22 @@ mac {
 win32 { 
     message("Straight compile on windows")
     CONFIG *= dll
+    CONFIG += console
     DEFINES += QT_NODLL
     INCLUDEPATH *= src/
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
     INSTALLS += target headers
-    win32:LIBS *= -Lc:/mingw/lib \
-        -lwsock32
+#    win32:LIBS *= -Lc:/mingw/lib \
+    LIBS *= -lwsock32
+    QMAKE_LFLAGS += -enable-auto-import
 }
 
 # Straight Linux
 linux-g++ { 
-	message("Straight Linux Build")
-	INCLUDEPATH *= src/
+message("Straight Linux Build")
+    INCLUDEPATH *= src/
     target.path = $$INSTALL_ROOT/usr/local/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/include
