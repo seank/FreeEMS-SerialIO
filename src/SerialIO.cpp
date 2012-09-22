@@ -11,8 +11,9 @@
 namespace IPDS {
 
 #ifdef __WIN32__
-void IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop)
-{
+int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop)
+{	
+	qDebug() << "win32_cfg_serial() called.";
 	DCB dcb;
 	WSADATA wsaData;
 	int res = 0;
@@ -79,31 +80,24 @@ void IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits
 	/* Set timeout params in a fashion that mimics linux behavior */
 
 	GetCommTimeouts((HANDLE) _get_osfhandle (fd), &timeouts);
-	/*
-	 if (baud == 112500)
-	 timeouts.ReadTotalTimeoutConstant    = 250;
-	 else
-	 timeouts.ReadTotalTimeoutConstant    = 100;
-	 timeouts.ReadTotalTimeoutMultiplier  = 1;
-	 timeouts.WriteTotalTimeoutMultiplier = 1;
-	 timeouts.WriteTotalTimeoutConstant   = 25;
-	 */
 
-	timeouts.ReadIntervalTimeout = 0;
-	timeouts.ReadTotalTimeoutConstant = 100;
-	timeouts.ReadTotalTimeoutMultiplier = 1;
-	timeouts.WriteTotalTimeoutConstant = 100;
-	timeouts.WriteTotalTimeoutMultiplier = 1;
+	/* COMMTIMEOUTS/BLOCKING/NON-BLOCKING 
+	immediate = { MAXDWORD, 0, 0, 0, 0 };
+	timeout   = { MAXDWORD, MAXDWORD, 10000, 0, 0 };
+	blocking  = { 0, 0, 0, 0, 0 };
+	*/
+	timeouts.ReadIntervalTimeout = MAXDWORD;
+	timeouts.ReadTotalTimeoutMultiplier = 0;
+	timeouts.ReadTotalTimeoutConstant = 0;
+	timeouts.WriteTotalTimeoutConstant = 0;
+	timeouts.WriteTotalTimeoutMultiplier = 0;
 
 	SetCommTimeouts((HANDLE) _get_osfhandle (fd) ,&timeouts);
 
 	res = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if (res != 0) {
-		//printf(_("WSAStartup failed: %d\n"),res);
+	if (res != 0)
 		printf("WSAStartup failed: %d\n", res);
-	}
-	return;
-
+	return res;		
 }
 #endif
 
@@ -129,8 +123,13 @@ SerialIOPrivate::~SerialIOPrivate() {
 
 int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& parity, int stop) {
 #ifdef __WIN32__
-	win32_cfg_serial(m_FD, baudrate, 8, parity, stop);
-	return 0;
+	if (win32_cfg_serial(m_FD, baudrate, 8, parity, stop) != 0) {
+		qDebug() << "problem configuring port in windows";
+		return -1;
+	} else {
+		qDebug() << "Configuring port in windows seeded to be sucessful";
+	}
+//	return 0;
 #else
 	   struct termios newtio;
 	   //memset(&newtio, 0, sizeof(newtio));
@@ -306,6 +305,7 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	      std::cerr<<"tcsetattr() 5 failed"<<std::endl;
 	   }
 #endif
+	   qDebug() << "setupPort() called. ";
 	   return 1;
 }
 
@@ -313,6 +313,10 @@ void IPDS::SerialIOPrivate::openPort(QString portName) {
 	m_portName = portName;
 	#ifdef __WIN32__
 	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_BINARY );
+	/* QIODevice might prove to be a better method to impliment async read and writes.
+	   *nix has always supported async IO for files/devices.  Currently this lib is about 6x
+	   as slow on windows than it is on Linux.  SM ping is about 6-7ms and 1-2ms on Linux.
+	 */
 #else
 	/* NON-block open, then turn to blocking via fcntl so it works
 	 nicely on linux and OS-X.  this MUST be done this way because
@@ -323,7 +327,7 @@ void IPDS::SerialIOPrivate::openPort(QString portName) {
 	 */
 //	_FD = open(_portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
-//	fcntl(m_FD, ~O_NONBLOCK);
+//	fcntl(m_FD, ~O_NONBLOCK); //non-blocking
 	fcntl(m_FD, F_SETFL, 0);
 
 #endif

@@ -71,8 +71,12 @@ void IPDS::AsyncRead::run() {
 			if (result > 0) {
 				//emit RXByte(byte);
 				processByte(byte);
-			} else if (result == 0) {
-				// read zero bytes but did not error
+			} else if (result == 0) { // read zero bytes but did not error
+				/* This is likely just a temp hack for windows users. Again QIODevice might be the right
+				way to perm avoid this *problem */
+				#ifdef __WIN32__
+				continue;
+				#endif
 				qDebug() << "READ() gave us 0, something must be wrong emitting error";
 				emit RXError(BAD_FD);
 			} else {
