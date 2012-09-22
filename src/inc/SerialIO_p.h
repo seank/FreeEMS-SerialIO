@@ -94,7 +94,7 @@ private:
 	QString m_dataMode;
 
 #ifdef __WIN32__
-	void win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop);
+	int win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop);
 #else
 	struct termios m_oldtio;
 	struct termios m_newtio;
