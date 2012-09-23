@@ -113,16 +113,11 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	} else {
 		qDebug() << "Configuring port in windows seeded to be sucessful";
 	}
-//	return 0;
 #else
-	   struct termios newtio;
-	   //memset(&newtio, 0, sizeof(newtio));
+	   memset(&m_newtio, 0, sizeof(m_newtio));
+	  /* save old TIO settings */
 	   if (tcgetattr(m_FD, &m_oldtio)!=0) {
 	           std::cerr<<"tcgetattr() 2 failed"<<std::endl;
-	   }
-	   if (tcgetattr(m_FD, &newtio)!=0)
-	   {
-	      std::cerr<<"tcgetattr() 3 failed"<<std::endl;
 	   }
 	   speed_t _baud=0;
 	   switch (baudrate)
@@ -214,8 +209,8 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	      break;
 	   }
 	   /* RX and TX are presumed to be the same */
-	   cfsetospeed(&newtio, (speed_t)_baud);
-	   cfsetispeed(&newtio, (speed_t)_baud);
+	   cfsetospeed(&m_newtio, (speed_t)_baud);
+	   cfsetispeed(&m_newtio, (speed_t)_baud);
 	   /* We generate mark and space parity ourself. */
 	   if (databits == 7 && (parity=="mark" || parity == "space"))
 	   {
@@ -224,67 +219,58 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	   switch (databits)
 	   {
 	   case 5:
-	      newtio.c_cflag = (newtio.c_cflag & ~CSIZE) | CS5;
+	      m_newtio.c_cflag = (m_newtio.c_cflag & ~CSIZE) | CS5;
 	      break;
 	   case 6:
-	      newtio.c_cflag = (newtio.c_cflag & ~CSIZE) | CS6;
+	      m_newtio.c_cflag = (m_newtio.c_cflag & ~CSIZE) | CS6;
 	      break;
 	   case 7:
-	      newtio.c_cflag = (newtio.c_cflag & ~CSIZE) | CS7;
+	      m_newtio.c_cflag = (m_newtio.c_cflag & ~CSIZE) | CS7;
 	      break;
 	   case 8:
 	   default:
-	      newtio.c_cflag = (newtio.c_cflag & ~CSIZE) | CS8;
+	      m_newtio.c_cflag = (m_newtio.c_cflag & ~CSIZE) | CS8;
 	      break;
 	   }
-	   newtio.c_cflag |= CLOCAL | CREAD;
+	   m_newtio.c_cflag |= CLOCAL | CREAD;
 	   //parity
 	   if (parity == "even") {
-	      newtio.c_cflag |= PARENB;
+	      m_newtio.c_cflag |= PARENB;
 	   } else if (parity == "odd") {
-	      newtio.c_cflag |= (PARENB | PARODD);
+	      m_newtio.c_cflag |= (PARENB | PARODD);
 	   } else if (parity == "none") {
-		   newtio.c_cflag &= ~(PARENB | PARODD);
+		   m_newtio.c_cflag &= ~(PARENB | PARODD);
 	   } else {
 		   qDebug() << "Parity not specified defaulting to none.";
-		   newtio.c_cflag &= ~(PARENB | PARODD);
+		   m_newtio.c_cflag &= ~(PARENB | PARODD);
 	   }
 	   //disable hardware handshake
-	   newtio.c_cflag &= ~CRTSCTS;
+	   m_newtio.c_cflag &= ~CRTSCTS;
 	   //configure stopbits
 	   if (stop == 2)
 	   {
-	      newtio.c_cflag |= CSTOPB;
+	      m_newtio.c_cflag |= CSTOPB;
 	   }
 	   else
 	   {
-	      newtio.c_cflag &= ~CSTOPB;
-	   }
-	   newtio.c_iflag=IGNBRK;
-	   //disable software handshake
-	   newtio.c_iflag &= ~(IXON|IXOFF|IXANY);
-	   newtio.c_lflag=0;
-	   newtio.c_oflag=0;
-	   //newtio.c_cc[VTIME]=1;
-	   //newtio.c_cc[VMIN]=60;
-	   newtio.c_cc[VTIME]=2;
-	   newtio.c_cc[VMIN]=1;
-	   tcflush(m_FD, TCIFLUSH);
-	   if (tcsetattr(m_FD, TCSANOW, &newtio)!=0)
-	   {
-	      std::cerr<<"tcsetattr() 1 failed"<<std::endl;
-	   }
-	   int mcs=0;
-	   ioctl(m_FD, TIOCMGET, &mcs);
-	   mcs |= TIOCM_RTS;
-	   ioctl(m_FD, TIOCMSET, &mcs);
-	   if (tcgetattr(m_FD, &newtio)!=0)
-	   {
-	      std::cerr<<"tcgetattr() 4 failed"<<std::endl;
+	      m_newtio.c_cflag &= ~CSTOPB;
 	   }
 	   /* disable hardware handshake */
-	   newtio.c_cflag &= ~CRTSCTS;
-	   if (tcsetattr(m_FD, TCSANOW, &newtio)!=0)
+	   m_newtio.c_cflag &= ~CRTSCTS;
+	   m_newtio.c_iflag = IGNBRK;
+	   //disable software handshake
+	   m_newtio.c_iflag &= ~(IXON|IXOFF|IXANY);
+	   m_newtio.c_lflag=0;
+	   m_newtio.c_oflag=0;
+	   m_newtio.c_cc[VTIME]=50;
+	   m_newtio.c_cc[VMIN]=0;
+
+//	   int mcs=0;
+//	   ioctl(m_FD, TIOCMGET, &mcs);
+//	   mcs |= TIOCM_RTS;
+//	   ioctl(m_FD, TIOCMSET, &mcs);
+
+	   if (tcsetattr(m_FD, TCSANOW, &m_newtio) != 0)
 	   {
 	      std::cerr<<"tcsetattr() 5 failed"<<std::endl;
 	   }
@@ -309,10 +295,14 @@ void IPDS::SerialIOPrivate::openPort(QString portName) {
 	 open() indefinitely.  Thus we open nonblocking then flip the bit
 	 afterwards, as termios will set things up the way we want..
 	 */
+
 //	_FD = open(_portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
-//	fcntl(m_FD, ~O_NONBLOCK); //non-blocking
-	fcntl(m_FD, F_SETFL, 0);
+//	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+//	fcntl(m_FD, F_SETFL, ~O_NONBLOCK); //non-blocking
+	fcntl(m_FD, F_SETFL, 0); // blocking
+//	 int n = fcntl(m_FD, F_GETFL, 0);
+//   fcntl(m_FD, F_SETFL, n & ~O_NDELAY);
 
 #endif
 	m_isOpen = m_FD != -1 ? true : false;
@@ -396,10 +386,11 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 		qDebug() << "asyncWriter thread stopped";
 	}
 	if (asyncReader.isRunning()) {
-		asyncReader.terminate();
+		asyncReader.shutdownThread();
+		asyncReader.wait();
 		qDebug() << "asyncReader thread stopped";
 	}
-	if (m_FD !=-1) {
+	if (m_FD != -1) {
 		tcsetattr(m_FD, TCSANOW, &m_oldtio);
 	}
 	close(m_FD);

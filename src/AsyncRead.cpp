@@ -31,35 +31,24 @@ void IPDS::AsyncRead::shutdownThread() {
 	m_shutdown = true;
 	g_readShutdownMutex.unlock();
 	qDebug() << this->currentThreadId();
-//	this->exit();
 }
 
 /* thread run overload */
 void IPDS::AsyncRead::run() {
-//	m_shutdown = false;
+
 	int result = 0;
 	unsigned char byte = 0;
 
-// TODO code to consider
-//	while (m_shutdown == false)
-//	{
-//	    do
-//	    {
-//	          result = read(*m_FD, &byte, 1);
-//	    }
-//	   while (result == -1 && errno == EWOULDBLOCK);
-//	   if (result == 1)
-//	         process(byte);
-//	   else
-//	   {
-//	          // other error
-//	   }
-//	   sleep(1);
-//	}
-
 	//for(g_readShutdownMutex.lock(); m_shutdown == false; g_readShutdownMutex.lock()) {
 	while(true) {
-//		g_readShutdownMutex.unlock();
+		g_readShutdownMutex.lock();
+		if (m_shutdown) {
+			g_readShutdownMutex.unlock();
+			m_shutdown = false;
+			return;
+		}
+		g_readShutdownMutex.unlock();
+
 		if (*m_FD == -1) {
 			//file descriptor went bad on us
 			qDebug() << "HES DEAD JIM, PORT DIED";
@@ -74,14 +63,11 @@ void IPDS::AsyncRead::run() {
 			} else if (result == 0) { // read zero bytes but did not error
 				/* This is likely just a temp hack for windows users. Again QIODevice might be the right
 				way to perm avoid this *problem */
-				#ifdef __WIN32__
-				continue;
-				#endif
-				qDebug() << "READ() gave us 0, something must be wrong emitting error";
-				emit RXError(BAD_FD);
+				qDebug() << "READ() gave us 0, attempting to read() again";
 			} else {
-				// recieved some sort of error
-				emit RXError(result);
+				//This is only of use when in blocking mode
+				qDebug() << "READ() gave us neither -1 or 0 or the number of bytes we requested " << result;
+				// emit RXError(result);
 			}
 		}
 	}
