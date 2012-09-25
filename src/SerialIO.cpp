@@ -205,7 +205,7 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	   case 921600: _baud=B921600; break;
 	#endif
 	   default:
-	      _baud=B115200;
+	      std::cout << "Error, BAUD rate appears to be invalid: " << _baud << std::endl;
 	      break;
 	   }
 	   /* RX and TX are presumed to be the same */
@@ -275,7 +275,7 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	      std::cerr<<"tcsetattr() 5 failed"<<std::endl;
 	   }
 #endif
-	   qDebug() << "setupPort() called. ";
+	   qDebug() << "setupPort() called with BAUD:" << baudrate << " DataBits:" << databits << " Parity:" << parity << " StopBits:" << stop;
 	   return 1;
 }
 
