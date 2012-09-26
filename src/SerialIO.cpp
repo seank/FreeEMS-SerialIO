@@ -234,14 +234,14 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	   }
 	   m_newtio.c_cflag |= CLOCAL | CREAD;
 	   //parity
-	   if (parity == "even") {
+	   if (parity.toLower() == "even") {
 	      m_newtio.c_cflag |= PARENB;
-	   } else if (parity == "odd") {
+	   } else if (parity.toLower() == "odd") {
 	      m_newtio.c_cflag |= (PARENB | PARODD);
-	   } else if (parity == "none") {
+	   } else if (parity.toLower() == "none") {
 		   m_newtio.c_cflag &= ~(PARENB | PARODD);
 	   } else {
-		   qDebug() << "Parity not specified defaulting to none.";
+		   std::cout << "Parity not specified defaulting to none." << std::endl;
 		   m_newtio.c_cflag &= ~(PARENB | PARODD);
 	   }
 	   //disable hardware handshake
@@ -274,6 +274,7 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	   {
 	      std::cerr<<"tcsetattr() 5 failed"<<std::endl;
 	   }
+	   tcflush(m_FD, TCIOFLUSH);
 #endif
 	   qDebug() << "setupPort() called with BAUD:" << baudrate << " DataBits:" << databits << " Parity:" << parity << " StopBits:" << stop;
 	   return 1;
@@ -298,7 +299,7 @@ void IPDS::SerialIOPrivate::openPort(QString portName) {
 
 //	_FD = open(_portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
 	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NDELAY);
-//	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK);
+	//	m_FD = open(m_portName.toUtf8().constData(), O_RDWR | O_NOCTTY | O_NONBLOCK);
 //	fcntl(m_FD, F_SETFL, ~O_NONBLOCK); //non-blocking
 	fcntl(m_FD, F_SETFL, 0); // blocking
 //	 int n = fcntl(m_FD, F_GETFL, 0);
@@ -324,9 +325,15 @@ void IPDS::SerialIOPrivate::communicate() {
 		g_readError = 0;
 		asyncReader.start();
 		asyncWriter.start();
-		m_isCommunicating = true;
+		if (asyncReader.isRunning() & asyncWriter.isRunning()) {
+			m_isCommunicating = true;
+		} else {
+			printf("Attempt to start async reader and writer threads failed. ");
+			m_isCommunicating = false;
+		}
+
 	} else {
-		printf("Error can't start port not open");
+		printf("Error can't start port not open. ");
 		m_isCommunicating = false;
 	}
 }
@@ -346,7 +353,6 @@ void IPDS::SerialIOPrivate::processTXError(int RXErrorNumber) {
 	printf("TX Error %i \n", RXErrorNumber);
 	//if(RXErrorNumber == BAD_FD ||  RXErrorNumber == INVALID_FD) {
 	closePort();
-	//}
 }
 
 void IPDS::SerialIOPrivate::receivedRXBlock(payloadVector payload) {
@@ -384,11 +390,15 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 		asyncWriter.shutdownThread();
 		asyncWriter.wait();
 		qDebug() << "asyncWriter thread stopped";
+	} else {
+		qDebug() << "asyncWriter thread ALREADY stopped";
 	}
 	if (asyncReader.isRunning()) {
 		asyncReader.shutdownThread();
 		asyncReader.wait();
 		qDebug() << "asyncReader thread stopped";
+	} else {
+		qDebug() << "asyncReader thread ALREADY stopped";
 	}
 	if (m_FD != -1) {
 		tcsetattr(m_FD, TCSANOW, &m_oldtio);
