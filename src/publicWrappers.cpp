@@ -37,7 +37,7 @@ bool SerialIO::isOpen() {
 	return d_ptr->isOpen();
 }
 
-int SerialIO::readData(unsigned char* buf, size_t numBytes) {
+int SerialIO::readData(unsigned char* buf, unsigned int numBytes) {
 	return d_ptr->readData(buf, numBytes);
 }
 
@@ -45,7 +45,7 @@ void SerialIO::addByte(unsigned char& byte) {
 	return d_ptr->addByte(byte);
 }
 
-void SerialIO::writeData(const void* data, size_t size) {
+void SerialIO::writeData(const void* data, unsigned int size) {
 	return d_ptr->writeData(data, size);
 }
 

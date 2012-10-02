@@ -26,7 +26,7 @@ public:
 	unsigned int getHeadIndex();
 	unsigned int bufferSize();
 	void fillPayload(payloadVector&);
-	void RXFromBuffer(unsigned char*, size_t size);
+	void RXFromBuffer(unsigned char*, unsigned int size);
 	void bufferBarf();
 	void flush();
 	void bufferInit();

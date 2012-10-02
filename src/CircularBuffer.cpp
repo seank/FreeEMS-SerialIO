@@ -97,7 +97,7 @@ void CircularBuffer::fillPayload(payloadVector& payload) {
 	}
 }
 
-void CircularBuffer::RXFromBuffer(unsigned char *buf, size_t size) {
+void CircularBuffer::RXFromBuffer(unsigned char *buf, unsigned int size) {
 	unsigned int i;
 	unsigned int j;
 	unsigned char byte;
