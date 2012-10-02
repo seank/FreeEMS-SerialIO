@@ -15,13 +15,12 @@ smTestStats smTestStats;
 int main(int argc, char *argv[]) {
 	QCoreApplication a(argc, argv);
 	serialConnection = new IPDS::SerialIO;
-//	QCoreApplication app(argc, argv);
 	QStringList args = a.arguments();
 	QString argument;
 	/* list of valid arguments */
     QString portName("--port=");
 
-    smTestStats.numChecks = 5000;
+    smTestStats.numChecks = 20000;
     printf("\n Parsing arguments");
 	for (int i = 1; i < args.size(); ++i) {
 		argument = args.at(i);
@@ -48,7 +47,10 @@ int main(int argc, char *argv[]) {
 	smPingTest();
 	//FreeEMSPacketCounter();
 	printSMResults();
-	return a.exec();
+	serialConnection->closePort();
+	delete serialConnection;
+	return 1;
+	//	return a.exec();
 }
 
 void smPingTest() {
