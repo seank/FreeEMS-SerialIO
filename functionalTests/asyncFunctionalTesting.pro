@@ -19,6 +19,8 @@ QMAKE_LFLAGS_DEBUG += -pg
 
 INCLUDEPATH *= ../src/inc/public/
 INCLUDEPATH *= inc/
+PRE_TARGETDEPS += "../libSerialIO.so"
+LIBS += -L$$quote(../) -lSerialIO
 
 # Straight Linux
 linux-g++ { 
