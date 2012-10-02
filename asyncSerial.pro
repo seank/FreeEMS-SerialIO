@@ -40,6 +40,7 @@ win32-x-g++ {
     CONFIG *= dll
     DEFINES += QT_NODLL
     INCLUDEPATH *= src/
+    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
@@ -59,6 +60,7 @@ win32 {
     CONFIG += console
     DEFINES += QT_NODLL
     INCLUDEPATH *= src/
+    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
@@ -72,6 +74,7 @@ win32 {
 linux-g++ { 
 message("Straight Linux Build")
     INCLUDEPATH *= src/
+    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/include

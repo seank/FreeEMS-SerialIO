@@ -5,7 +5,7 @@
  *      Author: seank
  */
 
-#include "inc/CircularBuffer.h"
+#include <CircularBuffer.h>
 
 namespace IPDS {
 

@@ -12,9 +12,9 @@
 #include <fcntl.h>
 
 /* Local Includes */
-#include "inc/AsyncRead.h"
-#include "inc/AsyncWrite.h"
-#include "inc/public/SerialIO.h"
+#include <AsyncRead.h>
+#include <AsyncWrite.h>
+#include <SerialIO.h>
 
 /* Conditional Includes */
 #ifdef __WIN32__

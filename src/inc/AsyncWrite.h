@@ -13,7 +13,7 @@
 #include <QVector>
 #include <QMutex>
 #include <QWaitCondition>
-#include "inc/CircularBuffer.h"
+#include <CircularBuffer.h>
 
 #ifdef __WIN32__
   #include <io.h>

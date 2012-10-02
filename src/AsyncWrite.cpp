@@ -5,9 +5,8 @@
  *      Author: seank
  */
 
-#include "inc/AsyncWrite.h"
-#include "inc/globals.h"
-
+#include <AsyncWrite.h>
+#include <globals.h>
 #include <stdio.h>
 
 namespace IPDS {

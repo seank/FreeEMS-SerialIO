@@ -1,12 +1,10 @@
 #include <iostream>
-
 #include <QtCore>
 #include <QCoreApplication>
 #include <QDebug>
-
-#include "inc/asyncFunctionalTesting.h"
-#include "inc/globals.h"
-#include "smTestStats.cpp"
+#include <asyncFunctionalTesting.h>
+#include <globals.h>
+#include <smTestStats.cpp>
 
 using namespace std;
 

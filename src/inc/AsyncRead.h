@@ -11,10 +11,10 @@
 #include <QThread>
 #include <QObject>
 #include <iostream>
-#include "inc/CircularBuffer.h"
-#include "inc/byteDefinitions.h"
-#include "inc/globals.h"
-#include "inc/public/SerialIO-types.h"
+#include <CircularBuffer.h>
+#include <byteDefinitions.h>
+#include <globals.h>
+#include <SerialIO-types.h>
 #include <QDebug>
 #include <QString>
 #include <QWaitCondition>

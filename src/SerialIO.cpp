@@ -5,7 +5,7 @@
  *      Author: seank
  */
 
-#include "inc/SerialIO_p.h"
+#include <SerialIO_p.h>
 #include <iostream>
 
 namespace IPDS {

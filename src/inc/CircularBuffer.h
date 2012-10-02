@@ -9,10 +9,8 @@
 #define CIRCULARBUFFER_H_
 
 #include <QVector>
-#include "inc/public/SerialIO-types.h"
-//for debug
+#include <SerialIO-types.h>
 #include <QDebug>
-
 
 
 namespace IPDS {
