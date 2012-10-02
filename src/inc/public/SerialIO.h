@@ -22,9 +22,9 @@ public:
 	void setMode(QString& mode);
 	void openPort(QString);
 	bool isOpen();
-	int readData(unsigned char* buf, size_t numBytes);
+	int readData(unsigned char* buf, unsigned int numBytes);
 	void addByte(unsigned char& byte);
-	void writeData(const void* data, size_t size);
+	void writeData(const void* data, unsigned int size);
 	void setDataMode(QString&);
 //	void writeData(QVector data);
 	bool isCommunicating();

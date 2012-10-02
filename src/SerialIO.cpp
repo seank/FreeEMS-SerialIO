@@ -425,7 +425,7 @@ void IPDS::SerialIOPrivate::addByte(unsigned char& byte) {
 	}
 }
 
-void IPDS::SerialIOPrivate::writeData(const void* data, size_t bufferSize) {
+void IPDS::SerialIOPrivate::writeData(const void* data, unsigned int bufferSize) {
 	qDebug() << "Performing a write";
 	unsigned int i;
 	for(i = 0; bufferSize > i; i++) {
@@ -442,7 +442,7 @@ void IPDS::SerialIOPrivate::flushRX() {
 	asyncReader.flush();
 }
 
-int IPDS::SerialIOPrivate::readData(unsigned char* buf, size_t numBytes) {
+int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
 	if (asyncReader.getMode() != "RAW") {
 		std::cout << "Error: you cannot perform a read() while in FreeEMS packet mode " << std::endl;
 	}
