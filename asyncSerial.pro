@@ -36,6 +36,7 @@ SOURCES += src/AsyncRead.cpp \
 
 INCLUDEPATH *= src/
 INCLUDEPATH *= src/inc
+INCLUDEPATH *= src/inc/public/
 target.path = $$INSTALL_ROOT/usr/local/lib
 headers.files = $$PUBLIC_HEADERS
 headers.path = $$INSTALL_ROOT/usr/local/include
