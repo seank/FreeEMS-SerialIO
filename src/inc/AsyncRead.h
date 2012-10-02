@@ -44,7 +44,7 @@ signals:
 	void RXPacket(payloadVector);
 	void RXError(int);
 private:
-	bool m_shutdown;
+	bool m_shutdownReaderThread;
 	bool m_nextIsEscaped;
 	bool m_insidePacket;
 	unsigned char m_lastByte;

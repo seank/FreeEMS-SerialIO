@@ -19,24 +19,28 @@ AsyncWrite::AsyncWrite(int *FD, CircularBuffer *buffer) {
 
 AsyncWrite::~AsyncWrite() {
 	// TODO Auto-generated destructor stub
+	qDebug() << "~AsyncWrite() called";
+	g_writeShutdownMutex.unlock();
 }
 
 void IPDS::AsyncWrite::shutdownThread() {
-	qDebug() << "Shutdown request AsyncWrite";
+	qDebug() << "Shutdown request AsyncWrite " << this->currentThreadId();;
 	g_writeShutdownMutex.lock();
-	m_shutdown = true;
+	m_shutdownWriterThread = true;
 	g_writeShutdownMutex.unlock();
-	qDebug() << this->currentThreadId();
 }
 
 void IPDS::AsyncWrite::run() {
-	m_shutdown = false;
+	qDebug() << "Starting AsyncWrite thread as " << this->currentThreadId();
+
+	m_shutdownWriterThread = false;
+
 	int result = 0;
 	unsigned char byte;
 	QMutex writeMutex;
-	for(g_writeShutdownMutex.lock(); m_shutdown == false; g_writeShutdownMutex.lock()) {
+	for(g_writeShutdownMutex.lock(); m_shutdownWriterThread == false; g_writeShutdownMutex.lock()) {
 		g_writeShutdownMutex.unlock();
-		while (m_writeBuffer->bufferSize() > 0 && m_shutdown == false) {
+		while (m_writeBuffer->bufferSize() > 0 && m_shutdownWriterThread == false) {
 			byte = m_writeBuffer->getByte();
 			result = write(*_FD, &byte, 1);
 			if (result < 0) {

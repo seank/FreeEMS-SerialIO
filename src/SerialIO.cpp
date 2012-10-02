@@ -85,7 +85,7 @@ int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits,
 }
 #endif
 
-SerialIOPrivate::SerialIOPrivate(): asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_writeBuffer), m_readBuffer(8196), m_writeBuffer(8196) {
+SerialIOPrivate::SerialIOPrivate(): m_readBuffer(8196), m_writeBuffer(8196), asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_writeBuffer) {
 	TXBytesLeft = 0;
 	m_isCommunicating = false;
 	m_isConfigured = false;
@@ -102,7 +102,8 @@ SerialIOPrivate::SerialIOPrivate(): asyncReader(&m_FD, &m_readBuffer), asyncWrit
 }
 
 SerialIOPrivate::~SerialIOPrivate() {
-	// TODO Auto-generated destructor stub
+	qDebug() << "~SerialIOPrivate() called";
+	closePort();
 }
 
 int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& parity, int stop) {
@@ -319,19 +320,18 @@ bool IPDS::SerialIOPrivate::isCommunicating() {
 }
 
 void IPDS::SerialIOPrivate::communicate() {
-	if(m_isOpen) {
+	if (m_isOpen) {
 		//asyncReader.m_communicating = &_isCommunicating;
 		//asyncWriter._communicating = &_isCommunicating;
 		g_readError = 0;
 		asyncReader.start();
 		asyncWriter.start();
-		if (asyncReader.isRunning() & asyncWriter.isRunning()) {
+		if (asyncReader.isRunning() && asyncWriter.isRunning()) {
 			m_isCommunicating = true;
 		} else {
 			printf("Attempt to start async reader and writer threads failed. ");
 			m_isCommunicating = false;
 		}
-
 	} else {
 		printf("Error can't start port not open. ");
 		m_isCommunicating = false;
@@ -386,24 +386,27 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 	m_isCommunicating = false;
 	m_isOpen = false;
 	qDebug() << "Waiting for threads to finish";
+
 	if (asyncWriter.isRunning()) {
 		asyncWriter.shutdownThread();
 		asyncWriter.wait();
-		qDebug() << "asyncWriter thread stopped";
+		qDebug() << "asyncWriter thread stopped" << asyncWriter.currentThreadId();
 	} else {
-		qDebug() << "asyncWriter thread ALREADY stopped";
+		qDebug() << "asyncWriter thread ALREADY stopped" << asyncWriter.currentThreadId();
 	}
+
 	if (asyncReader.isRunning()) {
 		asyncReader.shutdownThread();
 		asyncReader.wait();
-		qDebug() << "asyncReader thread stopped";
+		qDebug() << "asyncReader thread stopped" << asyncReader.currentThreadId();
 	} else {
-		qDebug() << "asyncReader thread ALREADY stopped";
+		qDebug() << "asyncReader thread ALREADY stopped" << asyncReader.currentThreadId();
 	}
+
 	if (m_FD != -1) {
 		tcsetattr(m_FD, TCSANOW, &m_oldtio);
+		close(m_FD);
 	}
-	close(m_FD);
 	qDebug() << "Done waiting for threads";
 	m_FD = -1;
 	qDebug() << "closed port";

@@ -37,7 +37,7 @@ signals:
 	void TXByte(unsigned char);
 	void TXError(int);
 private:
-	bool m_shutdown;
+	bool m_shutdownWriterThread;
 	int *_FD;
 	CircularBuffer *m_writeBuffer;
 };

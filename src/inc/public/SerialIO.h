@@ -47,7 +47,7 @@ public slots:
 	void processTXError(int);
 
 private:
-	SerialIOPrivate* d;
+	SerialIOPrivate * const d_ptr;
 };
 
 } /* namespace IPDS */

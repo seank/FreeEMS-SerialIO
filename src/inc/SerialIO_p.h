@@ -75,8 +75,14 @@ public slots:
 	void processTXError(int);
 
 private:
-	IPDS::AsyncRead asyncReader;
-	IPDS::AsyncWrite asyncWriter;
+
+#ifdef __WIN32__
+	int win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop);
+#else
+	struct termios m_oldtio;
+	struct termios m_newtio;
+#endif
+
 	bool m_isOpen;
 	bool m_isConfigured;
 	bool m_isCommunicating;
@@ -89,16 +95,11 @@ private:
 	unsigned char TXBuffer[TX_BUF_SIZE];
 	unsigned int TXBytesLeft;
 	QMutex m_readMutex;
+	QString m_dataMode;
 	IPDS::CircularBuffer m_readBuffer;
 	IPDS::CircularBuffer m_writeBuffer;
-	QString m_dataMode;
-
-#ifdef __WIN32__
-	int win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop);
-#else
-	struct termios m_oldtio;
-	struct termios m_newtio;
-#endif
+	IPDS::AsyncRead asyncReader;
+	IPDS::AsyncWrite asyncWriter;
 };
 
 } /* namespace IPDS */

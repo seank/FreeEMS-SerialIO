@@ -23,28 +23,29 @@ AsyncRead::AsyncRead(int *FD, CircularBuffer *buffer) {
 
 AsyncRead::~AsyncRead() {
 	// TODO Auto-generated destructor stub
+	qDebug() << "~AsyncRead() called";
+	g_readShutdownMutex.unlock();
 }
 
 void IPDS::AsyncRead::shutdownThread() {
-	qDebug() << "Shutdown request AsyncRead";
+	qDebug() << "Shutdown request AsyncRead " << this->currentThreadId();
 	g_readShutdownMutex.lock();
-	m_shutdown = true;
+	m_shutdownReaderThread = true;
 	g_readShutdownMutex.unlock();
-	qDebug() << this->currentThreadId();
 }
 
 /* thread run overload */
 void IPDS::AsyncRead::run() {
-
+	qDebug() << "Starting AsyncRead thread as " << this->currentThreadId();
 	int result = 0;
 	unsigned char byte = 0;
-
+	m_shutdownReaderThread = false;
 	//for(g_readShutdownMutex.lock(); m_shutdown == false; g_readShutdownMutex.lock()) {
 	while(true) {
 		g_readShutdownMutex.lock();
-		if (m_shutdown) {
+		if (m_shutdownReaderThread) {
 			g_readShutdownMutex.unlock();
-			m_shutdown = false;
+			m_shutdownReaderThread = false;
 			return;
 		}
 		g_readShutdownMutex.unlock();
@@ -54,7 +55,6 @@ void IPDS::AsyncRead::run() {
 			qDebug() << "HES DEAD JIM, PORT DIED";
 			emit RXError(INVALID_FD);
 			return; //terminate thread
-			//emit RXError(INVALID_FD);
 		} else {
 			result = read(*m_FD, &byte, 1);  //sites here forever until data comes in on the serial port
 			if (result > 0) {

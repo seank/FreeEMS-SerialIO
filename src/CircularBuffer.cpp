@@ -10,7 +10,6 @@
 namespace IPDS {
 
 CircularBuffer::CircularBuffer(unsigned int size) {
-	// TODO Auto-generated constructor stub
 	m_data = new unsigned char[size];
 	m_head = 0;
 	m_tail = 0;
@@ -22,8 +21,8 @@ CircularBuffer::CircularBuffer(unsigned int size) {
 }
 
 CircularBuffer::~CircularBuffer() {
-	// TODO Auto-generated destructor stub
-	delete m_data;
+	qDebug() << "~CircularBuffer() called";
+//	delete[] m_data;
 }
 
 bool CircularBuffer::pushByte(const unsigned char& byte) {

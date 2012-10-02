@@ -20,9 +20,15 @@ QMAKE_LFLAGS_DEBUG += -pg
 # Straight Linux
 linux-g++ { 
     message("Straight Linux Build")
-    PRE_TARGETDEPS += "../libSerialIO.so"
     unix:INCLUDEPATH += $$quote(../src/inc/public)
-    unix:LIBS += $$quote(../libSerialIO.so)
+    CONFIG(debug, debug|release) {
+    	PRE_TARGETDEPS += "../libSerialIO.so"
+		LIBS += -L$$quote(../) -lSerialIO
+    } else {
+#		DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT
+		PRE_TARGETDEPS += "../libSerialIO.so"
+    	LIBS += -L$$quote(../) -lSerialIO
+    }
 }
 
 # Win32 MinGW
