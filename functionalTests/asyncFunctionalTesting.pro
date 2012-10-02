@@ -17,6 +17,9 @@ CONFIG += console
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
 
+INCLUDEPATH *= ../src/inc/public/
+INCLUDEPATH *= inc/
+
 # Straight Linux
 linux-g++ { 
     message("Straight Linux Build")
