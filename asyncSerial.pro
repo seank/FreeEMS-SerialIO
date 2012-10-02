@@ -34,6 +34,13 @@ SOURCES += src/AsyncRead.cpp \
     src/SerialIO.cpp \
     src/globals.cpp
 
+INCLUDEPATH *= src/
+INCLUDEPATH *= src/inc
+target.path = $$INSTALL_ROOT/usr/local/lib
+headers.files = $$PUBLIC_HEADERS
+headers.path = $$INSTALL_ROOT/usr/local/include
+INSTALLS += target headers
+
 # Cross compilation
 win32-x-g++ { 
     message("Crosscompiling on Unix to Windows")
@@ -72,7 +79,7 @@ win32 {
 
 # Straight Linux
 linux-g++ { 
-message("Straight Linux Build")
+	message("Straight Linux Build")
     INCLUDEPATH *= src/
     INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/lib
@@ -80,3 +87,4 @@ message("Straight Linux Build")
     headers.path = $$INSTALL_ROOT/usr/local/include
     INSTALLS += target headers
 }
+
