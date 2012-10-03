@@ -17,6 +17,7 @@ CONFIG += console
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
 
+#default make spec
 INCLUDEPATH *= ../src/inc/public/
 INCLUDEPATH *= inc/
 PRE_TARGETDEPS += "../libSerialIO.so"
