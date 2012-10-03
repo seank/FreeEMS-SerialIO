@@ -85,25 +85,34 @@ int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits,
 }
 #endif
 
-SerialIOPrivate::SerialIOPrivate(): m_readBuffer(8196), m_writeBuffer(8196), asyncReader(&m_FD, &m_readBuffer), asyncWriter(&m_FD, &m_writeBuffer) {
+SerialIOPrivate::SerialIOPrivate() {
+	m_readBuffer = new IPDS::CircularBuffer(8196);
+	m_writeBuffer = new IPDS::CircularBuffer(8196);
+	asyncReader = new IPDS::AsyncRead(&m_FD, m_readBuffer);
+	asyncWriter = new IPDS::AsyncWrite(&m_FD, m_writeBuffer);
+
 	TXBytesLeft = 0;
 	m_isCommunicating = false;
 	m_isConfigured = false;
 	m_numBytesExpected = 1;
 	m_readBlockMS = 2000; //default to 2000ms before read() times out
 	QString mode = "FREEEMS";
-	asyncReader.setMode(mode);
+	asyncReader->setMode(mode);
 	/* setup signals and slots */
 	qRegisterMetaType<payloadVector>("payloadVector");
-	QObject::connect(&asyncReader, SIGNAL( RXBlock(payloadVector) ), this, SLOT( receivedRXBlock(payloadVector) ));
-	QObject::connect(&asyncReader, SIGNAL( RXPacket(payloadVector) ), this, SLOT( receivedRXPacket(payloadVector)) );
-	QObject::connect(&asyncReader, SIGNAL( RXError(int)), this, SLOT( processRXError(int) ));
-	QObject::connect(&asyncWriter, SIGNAL( TXError(int)), this, SLOT( processTXError(int) ));
+	QObject::connect(asyncReader, SIGNAL( RXBlock(payloadVector) ), this, SLOT( receivedRXBlock(payloadVector) ));
+	QObject::connect(asyncReader, SIGNAL( RXPacket(payloadVector) ), this, SLOT( receivedRXPacket(payloadVector)) );
+	QObject::connect(asyncReader, SIGNAL( RXError(int)), this, SLOT( processRXError(int) ));
+	QObject::connect(asyncWriter, SIGNAL( TXError(int)), this, SLOT( processTXError(int) ));
 }
 
 SerialIOPrivate::~SerialIOPrivate() {
 	qDebug() << "~SerialIOPrivate() called";
 	closePort();
+	delete asyncReader;
+	delete asyncWriter;
+	delete m_readBuffer;
+	delete m_writeBuffer;
 }
 
 int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& parity, int stop) {
@@ -112,7 +121,7 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 		qDebug() << "problem configuring port in windows";
 		return -1;
 	} else {
-		qDebug() << "Configuring port in windows seeded to be sucessful";
+		qDebug() << "Configuring port in windows seeded to be successful";
 	}
 #else
 	   memset(&m_newtio, 0, sizeof(m_newtio));
@@ -321,12 +330,12 @@ bool IPDS::SerialIOPrivate::isCommunicating() {
 
 void IPDS::SerialIOPrivate::communicate() {
 	if (m_isOpen) {
-		//asyncReader.m_communicating = &_isCommunicating;
-		//asyncWriter._communicating = &_isCommunicating;
+		//asyncReader->m_communicating = &_isCommunicating;
+		//asyncWriter->_communicating = &_isCommunicating;
 		g_readError = 0;
-		asyncReader.start();
-		asyncWriter.start();
-		if (asyncReader.isRunning() && asyncWriter.isRunning()) {
+		asyncReader->start();
+		asyncWriter->start();
+		if (asyncReader->isRunning() && asyncWriter->isRunning()) {
 			m_isCommunicating = true;
 		} else {
 			printf("Attempt to start async reader and writer threads failed. ");
@@ -366,7 +375,7 @@ void IPDS::SerialIOPrivate::receivedRXBlock(payloadVector payload) {
 
 void IPDS::SerialIOPrivate::receivedRXPacket(payloadVector packet) {
 //	packet.push_back('h');
-//	m_readBuffer.fillVector(test, head, tail);
+//	m_readBuffer->fillVector(test, head, tail);
 	qDebug() << "SerialIO RXPacket callback answered";
 	qDebug() << packet;
 	emit readPacketFinished(packet);
@@ -375,7 +384,7 @@ void IPDS::SerialIOPrivate::receivedRXPacket(payloadVector packet) {
 }
 
 //void IPDS::SerialIOPrivate::flushRX() {
-//	asyncReader.m_readBuffer->flush();
+//	asyncReader->m_readBuffer->flush();
 //}
 
 void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
@@ -387,20 +396,20 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 	m_isOpen = false;
 	qDebug() << "Waiting for threads to finish";
 
-	if (asyncWriter.isRunning()) {
-		asyncWriter.shutdownThread();
-		asyncWriter.wait();
-		qDebug() << "asyncWriter thread stopped" << asyncWriter.currentThreadId();
+	if (asyncWriter->isRunning()) {
+		asyncWriter->shutdownThread();
+		asyncWriter->wait();
+		qDebug() << "asyncWriter thread stopped" << asyncWriter->currentThreadId();
 	} else {
-		qDebug() << "asyncWriter thread ALREADY stopped" << asyncWriter.currentThreadId();
+		qDebug() << "asyncWriter thread ALREADY stopped" << asyncWriter->currentThreadId();
 	}
 
-	if (asyncReader.isRunning()) {
-		asyncReader.shutdownThread();
-		asyncReader.wait();
-		qDebug() << "asyncReader thread stopped" << asyncReader.currentThreadId();
+	if (asyncReader->isRunning()) {
+		asyncReader->shutdownThread();
+		asyncReader->wait();
+		qDebug() << "asyncReader thread stopped" << asyncReader->currentThreadId();
 	} else {
-		qDebug() << "asyncReader thread ALREADY stopped" << asyncReader.currentThreadId();
+		qDebug() << "asyncReader thread ALREADY stopped" << asyncReader->currentThreadId();
 	}
 
 	if (m_FD != -1) {
@@ -414,7 +423,7 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 }
 
 void IPDS::SerialIOPrivate::addByte(unsigned char& byte) {
-	m_readBuffer.pushByte(byte);
+	m_readBuffer->pushByte(byte);
 	m_numBytesProcessed++;
 	if (m_numBytesExpected == m_numBytesProcessed) {
 		if (m_dataMode == "SM") {
@@ -429,21 +438,21 @@ void IPDS::SerialIOPrivate::writeData(const void* data, unsigned int bufferSize)
 	qDebug() << "Performing a write";
 	unsigned int i;
 	for(i = 0; bufferSize > i; i++) {
-		m_writeBuffer.pushByte(*(static_cast<const unsigned char*>(data) + i));
+		m_writeBuffer->pushByte(*(static_cast<const unsigned char*>(data) + i));
 	}
 	g_writeBlock.wakeAll();
 }
 
 void IPDS::SerialIOPrivate::setMode(QString& mode) {
-	asyncReader.setMode(mode);
+	asyncReader->setMode(mode);
 }
 
 void IPDS::SerialIOPrivate::flushRX() {
-	asyncReader.flush();
+	asyncReader->flush();
 }
 
 int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
-	if (asyncReader.getMode() != "RAW") {
+	if (asyncReader->getMode() != "RAW") {
 		std::cout << "Error: you cannot perform a read() while in FreeEMS packet mode " << std::endl;
 	}
 	qDebug("Performing a read...");
@@ -451,8 +460,8 @@ int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
 	unsigned int lastNumBytes;
 	unsigned int currentNumBytes;
 	for (i = 0, lastNumBytes = 0, currentNumBytes = 0;
-			numBytes > (currentNumBytes = m_readBuffer.bufferSize());) {
-		qDebug("buffer smaller than requested(have %i but need %i) read size waiting....", m_readBuffer.bufferSize(), numBytes);
+			numBytes > (currentNumBytes = m_readBuffer->bufferSize());) {
+		qDebug("buffer smaller than requested(have %i but need %i) read size waiting....", m_readBuffer->bufferSize(), numBytes);
 		g_readMutex.lock();
 		if (g_readBlock.wait(&g_readMutex, 1) == false) { // wait for 1ms or until we are woke up by a byte coming in
 			if (lastNumBytes == currentNumBytes) {
@@ -471,7 +480,7 @@ int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
 		}
 		lastNumBytes = currentNumBytes;
 	}
-	m_readBuffer.RXFromBuffer(buf, numBytes);
+	m_readBuffer->RXFromBuffer(buf, numBytes);
 	return numBytes;
 }
 
@@ -482,7 +491,7 @@ void IPDS::SerialIOPrivate::run() {
 
 void IPDS::SerialIOPrivate::setDataMode(QString& mode) {
 	m_dataMode = mode;
-	asyncReader.setMode(mode);
+	asyncReader->setMode(mode);
 }
 
 /* ############### WRAPPERS FOR PUBLIC INTERFACE ######### */

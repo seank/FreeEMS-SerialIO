@@ -96,10 +96,10 @@ private:
 	unsigned int TXBytesLeft;
 	QMutex m_readMutex;
 	QString m_dataMode;
-	IPDS::CircularBuffer m_readBuffer;
-	IPDS::CircularBuffer m_writeBuffer;
-	IPDS::AsyncRead asyncReader;
-	IPDS::AsyncWrite asyncWriter;
+	IPDS::CircularBuffer *m_readBuffer;
+	IPDS::CircularBuffer *m_writeBuffer;
+	IPDS::AsyncRead *asyncReader;
+	IPDS::AsyncWrite *asyncWriter;
 };
 
 } /* namespace IPDS */
