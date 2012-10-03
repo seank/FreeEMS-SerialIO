@@ -13,7 +13,7 @@ CircularBuffer::CircularBuffer(unsigned int size) {
 	m_data = new unsigned char[size];
 	m_head = 0;
 	m_tail = 0;
-	m_bufferSize = size;
+	m_bufferSize = size - 1;
 	m_bufFull = false;
 	bufferInit();
 //	busyInput.unlock();
@@ -22,7 +22,11 @@ CircularBuffer::CircularBuffer(unsigned int size) {
 
 CircularBuffer::~CircularBuffer() {
 	qDebug() << "~CircularBuffer() called";
-//	delete[] m_data;
+	if(m_data == NULL) {
+		qDebug() << "It appears m_data has already been freed";
+	} else {
+		delete[] m_data;
+	}
 }
 
 bool CircularBuffer::pushByte(const unsigned char& byte) {
