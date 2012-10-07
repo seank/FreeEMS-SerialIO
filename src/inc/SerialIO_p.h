@@ -60,6 +60,7 @@ public:
 	void closePort();
 	void run();
 	void writeString(QString&);
+	void getPorts();
 
 signals:
 	void readBytesFinished(payloadVector);

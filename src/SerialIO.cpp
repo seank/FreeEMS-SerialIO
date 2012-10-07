@@ -272,7 +272,7 @@ int IPDS::SerialIOPrivate::setupPort(int baudrate, int databits, const QString& 
 	   m_newtio.c_iflag &= ~(IXON|IXOFF|IXANY);
 	   m_newtio.c_lflag=0;
 	   m_newtio.c_oflag=0;
-	   m_newtio.c_cc[VTIME]=50;
+	   m_newtio.c_cc[VTIME]=10;
 	   m_newtio.c_cc[VMIN]=0;
 
 //	   int mcs=0;
@@ -498,3 +498,31 @@ void IPDS::SerialIOPrivate::setDataMode(QString& mode) {
 #include "publicWrappers.cpp"
 
 } /* namespace IPDS */
+
+void IPDS::SerialIOPrivate::getPorts() {
+#ifdef __WIN32__
+//	HKEY hKey = 0;
+//	DWORD keyType = REG_SZ;
+//	TCHAR buf[255] = {0};
+//	DWORD bufSize = sizeof(buf);
+//
+//	QSettings winReg("HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM", QSettings::NativeFormat);
+//	auto comsKey = winReg.allKeys();
+//
+//	FOREACH( auto com, comsKey )
+//	{
+//	  // FOREACH - boost macro
+//	  // comsKey = QList<QString> (list of key names) [from Qt framework]
+//	  // com = QString (single key name) [from Qt framework]
+//	  if( RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\"), 0, KEY_QUERY_VALUE, &hKey ) == ERROR_SUCCESS )
+//	  {
+//	    wchar_t* keyw = new wchar_t();
+//	    //com.replace("/", "\\\\"); <- checked both variants commented and not commented; com == /Device/Serial0 so im converting to \\Device\\Serial0
+//	    int size = com.size();
+//	    mbstowcs( keyw, com.toStdString().data(), size );
+//	    auto ret = RegQueryValueEx( hKey, TEXT("\\Device\\Serial0"), 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this works!
+//	    //auto ret = RegQueryValueExW( hKey, (LPCWSTR)&keyw, 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this one not works!
+//	  }
+//	}
+#endif
+}
