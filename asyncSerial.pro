@@ -34,21 +34,20 @@ SOURCES += src/AsyncRead.cpp \
     src/SerialIO.cpp \
     src/globals.cpp
 
+# Default include and install paths
 INCLUDEPATH *= src/
 INCLUDEPATH *= src/inc
 INCLUDEPATH *= src/inc/public/
-target.path = $$INSTALL_ROOT/usr/local/lib
-headers.files = $$PUBLIC_HEADERS
-headers.path = $$INSTALL_ROOT/usr/local/include
-INSTALLS += target headers
+unix:target.path = $$INSTALL_ROOT/usr/local/lib
+unix:headers.files = $$PUBLIC_HEADERS
+unix:headers.path = $$INSTALL_ROOT/usr/local/include
+unix:INSTALLS += target headers
 
 # Cross compilation
 win32-x-g++ { 
     message("Crosscompiling on Unix to Windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
-#    INCLUDEPATH *= src/
-#    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
@@ -67,8 +66,6 @@ win32 {
     CONFIG *= dll
     CONFIG += console
     DEFINES += QT_NODLL
-#    INCLUDEPATH *= src/
-#    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
@@ -81,11 +78,5 @@ win32 {
 # Straight Linux
 linux-g++ { 
 	message("Straight Linux Build")
-#    INCLUDEPATH *= src/
-#    INCLUDEPATH *= src/inc
-#    target.path = $$INSTALL_ROOT/usr/local/lib
-#    headers.files = $$PUBLIC_HEADERS
-#    headers.path = $$INSTALL_ROOT/usr/local/include
-#    INSTALLS += target headers
 }
 
