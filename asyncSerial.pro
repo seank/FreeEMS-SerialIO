@@ -47,8 +47,8 @@ win32-x-g++ {
     message("Crosscompiling on Unix to Windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
-    INCLUDEPATH *= src/
-    INCLUDEPATH *= src/inc
+#    INCLUDEPATH *= src/
+#    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
@@ -67,8 +67,8 @@ win32 {
     CONFIG *= dll
     CONFIG += console
     DEFINES += QT_NODLL
-    INCLUDEPATH *= src/
-    INCLUDEPATH *= src/inc
+#    INCLUDEPATH *= src/
+#    INCLUDEPATH *= src/inc
     target.path = $$INSTALL_ROOT/usr/local/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$INSTALL_ROOT/usr/local/win32/include
@@ -81,11 +81,11 @@ win32 {
 # Straight Linux
 linux-g++ { 
 	message("Straight Linux Build")
-    INCLUDEPATH *= src/
-    INCLUDEPATH *= src/inc
-    target.path = $$INSTALL_ROOT/usr/local/lib
-    headers.files = $$PUBLIC_HEADERS
-    headers.path = $$INSTALL_ROOT/usr/local/include
-    INSTALLS += target headers
+#    INCLUDEPATH *= src/
+#    INCLUDEPATH *= src/inc
+#    target.path = $$INSTALL_ROOT/usr/local/lib
+#    headers.files = $$PUBLIC_HEADERS
+#    headers.path = $$INSTALL_ROOT/usr/local/include
+#    INSTALLS += target headers
 }
 
