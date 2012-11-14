@@ -8,15 +8,14 @@ QMAKE_LFLAGS_DEBUG += -pg
 CONFIG *= qt \
     warn_on \
     thread \
-    release \
-    debug
+    release 
 QT += core
 QT -= gui
 
 CONFIG(debug, debug|release) {
 	message("Building Debug Version, expect spew!")
 } else {
-	DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT
+	DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT 
 	message("Building Release Version")
 }
 
@@ -33,6 +32,8 @@ SOURCES += src/AsyncRead.cpp \
     src/CircularBuffer.cpp \
     src/SerialIO.cpp \
     src/globals.cpp
+
+DEFINES += SERIALIO_LIB
 
 # Default include and install paths
 INCLUDEPATH *= src/

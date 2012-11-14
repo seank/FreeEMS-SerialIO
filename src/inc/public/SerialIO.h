@@ -9,10 +9,17 @@
 #define SERIALIO_H_
 
 #include <SerialIO-types.h>
+#include <Qt/qglobal.h>
+
+#ifdef SERIALIO_LIB
+# define SERIALIO_EXPORT Q_DECL_EXPORT
+#else
+# define SERIALIO_EXPORT Q_DECL_IMPORT
+#endif
 
 namespace IPDS {
 class SerialIOPrivate;
-class SerialIO: public QThread {
+class SERIALIO_EXPORT SerialIO: public QThread {
 //	Q_OBJECT
 public:
 	SerialIO();
