@@ -30,23 +30,24 @@ CircularBuffer::~CircularBuffer() {
 }
 
 bool CircularBuffer::pushByte(const unsigned char& byte) {
+	qDebug() << "pushed " << byte << " into the circular buffer";
 	if (m_bufFull == true) {
-		qDebug() << "buffer overrun";
+		qDebug() << "buffer overrun, data overwrite";
+	}
+	*(m_data + m_head) = byte;
+	++m_head;
+	if (m_head > m_bufferSize) {
+		m_head = 0;
+	}
+	if (m_tail == m_head) {
+		m_bufFull = true;
+		qDebug() << "buffer full";
 		return false;
 	} else {
-		*(m_data + m_head) = byte;
-		++m_head;
-		if (m_head > m_bufferSize) {
-			m_head = 0;
-		}
-		if (m_tail == m_head) {
-			m_bufFull = true;
-			qDebug() << "buffer full";
-			return false;
-		}
-//		qDebug("added byte to buffer");
-		return true;
+		m_bufFull = false;
 	}
+//		qDebug("added byte to buffer");
+	return true;
 }
 
 unsigned int CircularBuffer::bufferSize() {

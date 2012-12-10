@@ -50,7 +50,16 @@ void IPDS::AsyncRead::run() {
 		}
 		g_readShutdownMutex.unlock();
 
-		if (*m_FD == -1) {
+		/* process a flush request */
+		g_readShutdownMutex.lock();
+		if (m_requestFlush) {
+			m_requestFlush = false;
+			m_readBuffer->flush();
+			qDebug() << "Read flush requested";
+		}
+		g_readShutdownMutex.unlock();
+
+		if (*m_FD < 0) {
 			//file descriptor went bad on us
 			qDebug() << "HES DEAD JIM, PORT DIED";
 			emit RXError(INVALID_FD);
@@ -134,7 +143,9 @@ void IPDS::AsyncRead::setMode(QString& mode) {
 }
 
 void IPDS::AsyncRead::flush() {
-	m_readBuffer->flush();
+	g_readShutdownMutex.lock();
+	m_requestFlush = true;
+	g_readShutdownMutex.unlock();
 }
 
 QString IPDS::AsyncRead::getMode() {

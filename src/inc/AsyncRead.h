@@ -45,6 +45,7 @@ signals:
 	void RXError(int);
 private:
 	bool m_shutdownReaderThread;
+	bool m_requestFlush;
 	bool m_nextIsEscaped;
 	bool m_insidePacket;
 	unsigned char m_lastByte;

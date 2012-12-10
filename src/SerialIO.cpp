@@ -448,6 +448,7 @@ void IPDS::SerialIOPrivate::setMode(QString& mode) {
 }
 
 void IPDS::SerialIOPrivate::flushRX() {
+	qDebug() << "Flushing RX buffer";
 	asyncReader->flush();
 }
 
@@ -524,5 +525,7 @@ void IPDS::SerialIOPrivate::getPorts() {
 //	    //auto ret = RegQueryValueExW( hKey, (LPCWSTR)&keyw, 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this one not works!
 //	  }
 //	}
+#else
+
 #endif
 }
