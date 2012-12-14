@@ -1,0 +1,15 @@
+Source: freeems-serialio
+Section: unknown
+Priority: extra
+Maintainer: Sean Keys <skeys@ipdatasys.com>
+Build-Depends: debhelper (>= 8.0.0), libqt4-core (>= 4.8.0), libqt4-declarative (>= 4.8.0)
+Standards-Version: 3.9.2
+Homepage: http://powerefi.com/loader
+#Vcs-Git: git://github.com/seank/FreeEMS-SerialIO.git
+#Vcs-Browser: http://github.com/seank/freeems-serialio
+
+Package: freeems-serialio
+Architecture: any
+Depends: libqt4-core (>= 4.8.0), libqt4-declarative (>= 4.8.0)
+Description: FreeEMS Firmware Loading Application
+ <insert long description, indented with spaces>
