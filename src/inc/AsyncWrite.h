@@ -18,8 +18,9 @@
 #ifdef __WIN32__
   #include <io.h>
   #include <windows.h>
-  #else
+#else
   #include <termios.h> // POSIX terminal control definitions
+  #include <unistd.h>
 #endif
 
 #define TX_BUF_SIZE	0x2000 //8KB buffer TODO make global

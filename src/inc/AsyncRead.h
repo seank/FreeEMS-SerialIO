@@ -22,8 +22,9 @@
 #ifdef __WIN32__
   #include <io.h>
   #include <windows.h>
-  #else
+#else
   #include <termios.h> // POSIX terminal control definitions
+  #include <unistd.h>
 #endif
 
 namespace IPDS {
