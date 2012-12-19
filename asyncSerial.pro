@@ -5,6 +5,9 @@ QMAKE_CXXFLAGS *= -Wall
 QMAKE_CXXFLAGS *= -Werror
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
+OBJECTS_DIR = build
+MOC_DIR = build
+UI_DIR = build
 CONFIG *= qt \
     warn_on \
     thread \

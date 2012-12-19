@@ -1,6 +1,7 @@
 .cproject
 .project
 .settings
+asyncSerial.pro.user
 gmon.out
 *.o
 moc*
@@ -15,6 +16,7 @@ libSerialIO.so.0.0.1
 notes.txt
 debug/
 release/
+build/
 unitTests/debug
 unitTests/release
 docs/InterractingWithFreeEMS.png
