@@ -49,13 +49,17 @@ unix:headers.path = $$PREFIX/include
 unix:INSTALLS += target headers
 }
 
-#build directives
-CONFIG(debug, debug|release) {
-	message("Building Debug Version, expect spew!")
-} else {
-	DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT 
-	message("Building Release Version, if you need debug symbols and debug messages rerun qmake \
+
+#unix CONFIG build directives, this secion has been made exclusive to unix because of other enviorment's(mainly mingw) CONFIG defaults.
+# eg(MinGQ qmake.conf) "CONFIG += qt warn_on release link_prl copy_dir_files debug_and_release debug_and_release_target precompile_header win32 win32-g++"
+unix {
+	CONFIG(debug, debug|release) {
+		message("Building Debug Version, expect spew!")
+	} else {
+		DEFINES += QT_NO_WARNING_OUTPUT QT_NO_DEBUG_OUTPUT 
+		message("Building Release Version, if you need debug symbols and debug messages rerun qmake \
 			 like this 'qmake CONFIG+=debug'")
+	}
 }
 
 # Cross compilation
@@ -63,6 +67,7 @@ win32-x-g++ {
     message("Crosscompiling on Unix to Windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
+    PREFIX = /usr/local
     target.path = $$PREFIX/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$PREFIX/win32/include
