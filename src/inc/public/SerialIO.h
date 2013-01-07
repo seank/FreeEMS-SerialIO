@@ -9,7 +9,7 @@
 #define SERIALIO_H_
 
 #include <SerialIO-types.h>
-#include <Qt/qglobal.h>
+#include <qglobal.h>
 
 #ifdef SERIALIO_LIB
 # define SERIALIO_EXPORT Q_DECL_EXPORT
