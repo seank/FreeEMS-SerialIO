@@ -67,7 +67,9 @@ win32-x-g++ {
     message("Crosscompiling on Unix to Windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
-    PREFIX = /usr/local
+    isEmpty(PREFIX) {
+    	PREFIX = /usr/local
+  	}
     target.path = $$PREFIX/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$PREFIX/win32/include
