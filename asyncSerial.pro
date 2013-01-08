@@ -69,6 +69,7 @@ win32-x-g++ {
     DEFINES += QT_NODLL
     isEmpty(PREFIX) {
     	PREFIX = /usr/local
+    	message("PREFIX not set, using /usr/local")
   	}
     target.path = $$PREFIX/win32/lib
     headers.files = $$PUBLIC_HEADERS
