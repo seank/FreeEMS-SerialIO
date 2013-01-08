@@ -71,9 +71,9 @@ win32-x-g++ {
     	PREFIX = /usr/local
     	message("PREFIX not set, using /usr/local")
   	}
-    target.path = $$PREFIX/win32/lib
+    target.path = $$PREFIX/lib
     headers.files = $$PUBLIC_HEADERS
-    headers.path = $$PREFIX/win32/include
+    headers.path = $$PREFIX/include
     INSTALLS += target headers
 }
 
