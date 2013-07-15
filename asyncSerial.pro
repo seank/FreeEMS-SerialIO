@@ -67,6 +67,7 @@ win32-x-g++|win64-x-g++ {
     message("Crosscompiling on Unix to Windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
+    LIBS *= -lwsock32
     isEmpty(PREFIX) {
     	PREFIX = /usr/local
     	message("PREFIX not set, using /usr/local")
