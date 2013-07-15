@@ -63,7 +63,12 @@ unix {
 }
 
 # Cross compilation
-win32-x-g++ { 
+win32-x-g++|win64-x-g++ { 
+    message("Crosscompiling on Unix to Windows")
+    # for mikes CI 
+    LIBS += -L/home/michael/QtWin32/lib
+    QMAKE_CXXFLAGS -= -Werror
+} { 
     message("Crosscompiling on Unix to Windows")
     CONFIG *= dll
     DEFINES += QT_NODLL
@@ -84,7 +89,7 @@ mac {
 }
 
 # Native Windows Build/MXE
-win32 { 
+win32|!win32-x-g++|!win64-x-g++ { 
     message("Straight compile on windows")
     CONFIG *= dll
     CONFIG += console
