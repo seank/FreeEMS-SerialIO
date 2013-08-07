@@ -529,3 +529,9 @@ void IPDS::SerialIOPrivate::getPorts() {
 
 #endif
 }
+
+QString getVersion() {
+	//TODO consider reporting all version information
+	QString version = externalData::version;
+	return version;
+}

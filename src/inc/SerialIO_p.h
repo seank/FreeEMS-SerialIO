@@ -15,6 +15,7 @@
 #include <AsyncRead.h>
 #include <AsyncWrite.h>
 #include <SerialIO.h>
+#include <externalData.h>
 
 /* Conditional Includes */
 #ifdef __WIN32__
@@ -61,6 +62,7 @@ public:
 	void run();
 	void writeString(QString&);
 	void getPorts();
+	QString getVersion();
 
 signals:
 	void readBytesFinished(payloadVector);

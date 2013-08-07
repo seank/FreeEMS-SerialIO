@@ -39,6 +39,7 @@ public:
 	void closePort();
 	void run();
 	void writeString(QString&);
+	QString getVersion();
 
 signals:
 	void readBytesFinished(payloadVector);
