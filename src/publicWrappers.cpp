@@ -88,3 +88,7 @@ void SerialIO::receivedRXPacket(payloadVector packet) {
 void SerialIO::processTXError(int RXErrorNumber) {
 	return d_ptr->processTXError(RXErrorNumber);
 }
+
+QString SerialIO::getVersion() {
+	return d_ptr->getVersion();
+}
