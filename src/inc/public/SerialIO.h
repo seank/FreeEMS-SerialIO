@@ -12,9 +12,9 @@
 #include <qglobal.h>
 
 #ifdef SERIALIO_LIB
-# define SERIALIO_EXPORT Q_DECL_EXPORT
+	#define SERIALIO_EXPORT Q_DECL_EXPORT
 #else
-# define SERIALIO_EXPORT Q_DECL_IMPORT
+	#define SERIALIO_EXPORT Q_DECL_IMPORT
 #endif
 
 namespace IPDS {
