@@ -30,7 +30,7 @@ SOURCES += src/externalData.cpp \
     src/SerialIO.cpp \
     src/globals.cpp
 DEFINES += SERIALIO_LIB
-DEFINES += VERSION
+DEFINES += LIB_VERSION="0.1.0"
 
 # Default include paths
 INCLUDEPATH *= src/

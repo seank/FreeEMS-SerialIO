@@ -29,4 +29,4 @@
 
 const char externalData::gitHASHLong[] = fwdDeclare(GIT_HASH_FULL);
 const char externalData::gitHASHShort[] = fwdDeclare(GIT_HASH);
-const char externalData::version[]	= fwdDeclare(VERSION);
+const char externalData::version[]	= fwdDeclare(LIB_VERSION);
