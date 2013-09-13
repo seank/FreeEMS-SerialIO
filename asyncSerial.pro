@@ -85,15 +85,12 @@ mac {
 # Native Windows Build/MXE
 win32-g++|win32-msvc { 
     message("Straight compile on windows")
-    CONFIG *= dll
-    CONFIG += console
-    DEFINES += QT_NODLL
+    CONFIG += console # iirc we needed to to view debug output.....
     target.path = $$PREFIX/win32/lib
     headers.files = $$PUBLIC_HEADERS
     headers.path = $$PREFIX/win32/include
     INSTALLS += target \
         headers
-    
     # win32:LIBS *= -Lc:/mingw/lib \
     LIBS *= -lwsock32
 }
