@@ -388,10 +388,6 @@ void IPDS::SerialIOPrivate::receivedRXPacket(payloadVector packet) {
 //}
 
 void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
-#ifdef __WIN32__
-	close(m_FD);
-	return;
-#else
 	m_isCommunicating = false;
 	m_isOpen = false;
 	qDebug() << "Waiting for threads to finish";
@@ -411,15 +407,18 @@ void IPDS::SerialIOPrivate::closePort() { //maybe rename to shutdown
 	} else {
 		qDebug() << "asyncReader thread ALREADY stopped" << asyncReader->currentThreadId();
 	}
-
+    qDebug() << "Done waiting for threads";
+#ifdef __WIN32__
+    close(m_FD);
+#else
 	if (m_FD != -1) {
 		tcsetattr(m_FD, TCSANOW, &m_oldtio);
 		close(m_FD);
 	}
-	qDebug() << "Done waiting for threads";
-	m_FD = -1;
-	qDebug() << "closed port";
 #endif
+    m_FD = -1;
+	qDebug() << "closed port";
+//#endif
 }
 
 void IPDS::SerialIOPrivate::addByte(unsigned char& byte) {
