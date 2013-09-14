@@ -14,7 +14,8 @@ namespace IPDS {
 int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits, QString parity, int stop)
 {	
 	qDebug() << "win32_cfg_serial() called.";
-	DCB dcb;
+    //TODO make a static dcb so that we can restore values when we are done
+    DCB dcb;
 	WSADATA wsaData;
 	int res = 0;
 	COMMTIMEOUTS timeouts;
@@ -70,8 +71,8 @@ int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits,
 	timeout   = { MAXDWORD, MAXDWORD, 10000, 0, 0 };
 	blocking  = { 0, 0, 0, 0, 0 };
 	*/
-	timeouts.ReadIntervalTimeout = MAXDWORD;
-	timeouts.ReadTotalTimeoutMultiplier = 0;
+    timeouts.ReadIntervalTimeout = MAXDWORD;
+    timeouts.ReadTotalTimeoutMultiplier = 0;
 	timeouts.ReadTotalTimeoutConstant = 0;
 	timeouts.WriteTotalTimeoutConstant = 0;
 	timeouts.WriteTotalTimeoutMultiplier = 0;
@@ -93,9 +94,9 @@ SerialIOPrivate::SerialIOPrivate() {
 
 	TXBytesLeft = 0;
 	m_isCommunicating = false;
-	m_isConfigured = false;
+    m_isConfigured = false;
 	m_numBytesExpected = 1;
-	m_readBlockMS = 2000; //default to 2000ms before read() times out
+    m_readBlockMS = 2000; //default to 2000ms before read() times out
 	QString mode = "FREEEMS";
 	asyncReader->setMode(mode);
 	/* setup signals and slots */
@@ -452,19 +453,26 @@ void IPDS::SerialIOPrivate::flushRX() {
 }
 
 int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
-	if (asyncReader->getMode() != "RAW") {
+    unsigned int readBlockMS = 0;
+//ifdef primairly for debugging purposes
+#ifdef __WIN32__
+    readBlockMS = 5;
+#else
+    readBlockMS = 1;
+#endif
+    if (asyncReader->getMode() != "RAW") {
 		std::cout << "Error: you cannot perform a read() while in FreeEMS packet mode " << std::endl;
 	}
 	qDebug("Performing a read...");
 	unsigned int i;
 	unsigned int lastNumBytes;
-	unsigned int currentNumBytes;
-	for (i = 0, lastNumBytes = 0, currentNumBytes = 0;
-			numBytes > (currentNumBytes = m_readBuffer->bufferSize());) {
+    unsigned int bytesInBuffer;
+    for (i = 0, lastNumBytes = 0, bytesInBuffer = 0;
+            numBytes > (bytesInBuffer = m_readBuffer->bufferSize()); ) {
 		qDebug("buffer smaller than requested(have %i but need %i) read size waiting....", m_readBuffer->bufferSize(), numBytes);
 		g_readMutex.lock();
-		if (g_readBlock.wait(&g_readMutex, 1) == false) { // wait for 1ms or until we are woke up by a byte coming in
-			if (lastNumBytes == currentNumBytes) {
+        if (g_readBlock.wait(&g_readMutex, readBlockMS) == false) { // wait for 1ms or until we are woke up by a byte coming in
+            if (lastNumBytes == bytesInBuffer) {
 				i++; //we have timed out
 			} else {
 				i = 0;
@@ -474,11 +482,11 @@ int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
 		if (g_readError)
 			return g_readError;
 		if (i > m_readBlockMS) { //TODO make configurable
-			qDebug() << "Read Incomplete: We timed out, readData() is returning " <<  currentNumBytes << " of"
+            qDebug() << "Read Incomplete: We timed out, readData() is returning " <<  bytesInBuffer << " of"
 					<< numBytes << " requested bytes";
-			return currentNumBytes;
+            return bytesInBuffer;
 		}
-		lastNumBytes = currentNumBytes;
+        lastNumBytes = bytesInBuffer;
 	}
 	m_readBuffer->RXFromBuffer(buf, numBytes);
 	return numBytes;
