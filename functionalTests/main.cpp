@@ -4,7 +4,9 @@
 #include <QDebug>
 #include <asyncFunctionalTesting.h>
 #include <globals.h>
-#include <smTestStats.cpp>
+
+//TODO break this out into a class
+#include "smTestStats.cpp"
 
 using namespace std;
 
