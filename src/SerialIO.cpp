@@ -456,7 +456,7 @@ int IPDS::SerialIOPrivate::readData(unsigned char* buf, unsigned int numBytes) {
     unsigned int readBlockMS = 0;
 //ifdef primairly for debugging purposes
 #ifdef __WIN32__
-    readBlockMS = 5;
+    readBlockMS = 1;
 #else
     readBlockMS = 1;
 #endif
