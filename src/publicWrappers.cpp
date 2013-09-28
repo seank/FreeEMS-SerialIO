@@ -92,3 +92,7 @@ void SerialIO::processTXError(int RXErrorNumber) {
 QString SerialIO::getVersion() {
 	return d_ptr->getVersion();
 }
+
+QStringList SerialIO::getPorts() {
+    return d_ptr->getPorts();
+}

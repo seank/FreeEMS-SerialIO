@@ -61,7 +61,7 @@ public:
 	void closePort();
 	void run();
 	void writeString(QString&);
-	void getPorts();
+    QStringList getPorts();
 	QString getVersion();
 
 signals:

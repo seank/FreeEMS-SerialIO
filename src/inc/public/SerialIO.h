@@ -10,6 +10,8 @@
 
 #include <SerialIO-types.h>
 #include <qglobal.h>
+#include <QStringList>
+#include <QDir>
 
 #ifdef SERIALIO_LIB
 	#define SERIALIO_EXPORT Q_DECL_EXPORT
@@ -39,6 +41,7 @@ public:
 	void closePort();
 	void run();
 	void writeString(QString&);
+    QStringList getPorts();
 	QString getVersion();
 
 signals:

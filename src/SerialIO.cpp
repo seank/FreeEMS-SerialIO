@@ -502,39 +502,63 @@ void IPDS::SerialIOPrivate::setDataMode(QString& mode) {
 	asyncReader->setMode(mode);
 }
 
-/* ############### WRAPPERS FOR PUBLIC INTERFACE ######### */
-#include "publicWrappers.cpp"
 
-} /* namespace IPDS */
-
-void IPDS::SerialIOPrivate::getPorts() {
-#ifdef __WIN32__
-//	HKEY hKey = 0;
-//	DWORD keyType = REG_SZ;
-//	TCHAR buf[255] = {0};
-//	DWORD bufSize = sizeof(buf);
-//
-//	QSettings winReg("HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM", QSettings::NativeFormat);
-//	auto comsKey = winReg.allKeys();
-//
-//	FOREACH( auto com, comsKey )
-//	{
-//	  // FOREACH - boost macro
-//	  // comsKey = QList<QString> (list of key names) [from Qt framework]
-//	  // com = QString (single key name) [from Qt framework]
-//	  if( RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\"), 0, KEY_QUERY_VALUE, &hKey ) == ERROR_SUCCESS )
-//	  {
-//	    wchar_t* keyw = new wchar_t();
-//	    //com.replace("/", "\\\\"); <- checked both variants commented and not commented; com == /Device/Serial0 so im converting to \\Device\\Serial0
-//	    int size = com.size();
-//	    mbstowcs( keyw, com.toStdString().data(), size );
-//	    auto ret = RegQueryValueEx( hKey, TEXT("\\Device\\Serial0"), 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this works!
-//	    //auto ret = RegQueryValueExW( hKey, (LPCWSTR)&keyw, 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this one not works!
-//	  }
-//	}
-#else
-
+QStringList IPDS::SerialIOPrivate::getPorts() {
+    QStringList filteredList;
+#ifdef __linux__
+    //TOOD consider full file info for permissions troubleshooting.
+    QDir path("/dev");
+    QStringList prefixes;
+    prefixes += "ttyS*";
+    prefixes += "ttyUSB*";
+    QStringList list = path.entryList(prefixes, QDir::System);
+    filteredList = list.filter(QRegExp("^ttyS[0-9]{1,1}$|^ttyUSB[0-9]$"));
+    for(int i = 0; i < filteredList.size(); i++) {
+        filteredList[i] = filteredList[i].prepend("/dev/");
+    }
+#elif __APPLE__
+    QDir path("/dev");
+    QStringList prefixes;
+    prefixes += "cu.*";
+    prefixes += "tty.*";
+    filteredList = path.entryList(prefixes, QDir::System);
+#elif __WIN32__
+    //TODO scan the windows registry for valid ports
+    filteredList;
+    filteredList += "COM1";
+    filteredList += "COM2";
+    filteredList += "COM3";
+    filteredList += "COM4";
+    filteredList += "COM5";
+    filteredList += "COM6";
+    filteredList += "COM7";
+    filteredList += "COM8";
+    filteredList += "COM9";
+    //	HKEY hKey = 0;
+    //	DWORD keyType = REG_SZ;
+    //	TCHAR buf[255] = {0};
+    //	DWORD bufSize = sizeof(buf);
+    //
+    //	QSettings winReg("HKEY_LOCAL_MACHINE\\HARDWARE\\DEVICEMAP\\SERIALCOMM", QSettings::NativeFormat);
+    //	auto comsKey = winReg.allKeys();
+    //
+    //	FOREACH( auto com, comsKey )
+    //	{
+    //	  // FOREACH - boost macro
+    //	  // comsKey = QList<QString> (list of key names) [from Qt framework]
+    //	  // com = QString (single key name) [from Qt framework]
+    //	  if( RegOpenKeyEx(HKEY_LOCAL_MACHINE, TEXT("\\HARDWARE\\DEVICEMAP\\SERIALCOMM\\"), 0, KEY_QUERY_VALUE, &hKey ) == ERROR_SUCCESS )
+    //	  {
+    //	    wchar_t* keyw = new wchar_t();
+    //	    //com.replace("/", "\\\\"); <- checked both variants commented and not commented; com == /Device/Serial0 so im converting to \\Device\\Serial0
+    //	    int size = com.size();
+    //	    mbstowcs( keyw, com.toStdString().data(), size );
+    //	    auto ret = RegQueryValueEx( hKey, TEXT("\\Device\\Serial0"), 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this works!
+    //	    //auto ret = RegQueryValueExW( hKey, (LPCWSTR)&keyw, 0, &keyType, (LPBYTE)buf, &bufSize ); // <- this one not works!
+    //	  }
+    //	}
 #endif
+    return filteredList;
 }
 
 QString IPDS::SerialIOPrivate::getVersion() {
@@ -542,3 +566,8 @@ QString IPDS::SerialIOPrivate::getVersion() {
 	QString version = externalData::version;
 	return version;
 }
+
+/* ############### WRAPPERS FOR PUBLIC INTERFACE ######### */
+#include "publicWrappers.cpp"
+
+} /* namespace IPDS */
