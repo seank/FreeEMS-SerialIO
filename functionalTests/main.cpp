@@ -21,7 +21,6 @@ int main(int argc, char *argv[]) {
     QString portName("--port=");
 
     smTestStats.numChecks = 20000;
-    printf("\n Parsing arguments");
 	for (int i = 1; i < args.size(); ++i) {
 		argument = args.at(i);
 		if (argument.startsWith(portName)) {
@@ -33,6 +32,7 @@ int main(int argc, char *argv[]) {
 	}
 	if(portName == "--port=") {
 		qDebug() << "Error: you must specify a serial port, eg. --port=/dev/ttyUSB0" << endl;
+        qDebug() << "Availiable Ports:" << serialConnection->getPorts();
 		return -1;
 	}
 	qDebug() << portName;

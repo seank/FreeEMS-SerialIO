@@ -21,7 +21,7 @@ INCLUDEPATH *= ../src/inc/public/
 INCLUDEPATH *= inc/
 
 # Straight Linux
-linux-g++ { 
+unix {
     message("Straight Linux Build")
     unix:INCLUDEPATH += $$quote(../src/inc/public)
     CONFIG(debug, debug|release) {
