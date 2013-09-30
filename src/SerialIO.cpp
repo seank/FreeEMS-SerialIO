@@ -524,7 +524,6 @@ QStringList IPDS::SerialIOPrivate::getPorts() {
     filteredList = path.entryList(prefixes, QDir::System);
 #elif __WIN32__
     //TODO scan the windows registry for valid ports
-    filteredList;
     filteredList += "COM1";
     filteredList += "COM2";
     filteredList += "COM3";
