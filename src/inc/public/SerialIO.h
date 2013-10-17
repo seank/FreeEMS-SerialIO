@@ -42,7 +42,7 @@ public:
 	void run();
 	void writeString(QString&);
     QStringList getPorts();
-	QString getVersion();
+    QString getVersion();
 
 signals:
 	void readBytesFinished(payloadVector);
@@ -57,8 +57,12 @@ public slots:
 	void receivedRXPacket(payloadVector);
 	void processTXError(int);
 
+protected:
+   SerialIOPrivate *const d_ptr;
+   SerialIO( SerialIOPrivate &the_ptr, QObject *parent = 0 );
+
 private:
-	SerialIOPrivate * const d_ptr;
+   Q_DECLARE_PRIVATE(SerialIO)
 };
 
 } /* namespace IPDS */
