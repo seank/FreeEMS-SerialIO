@@ -5,9 +5,17 @@ QMAKE_CXXFLAGS *= -Wall
 QMAKE_CXXFLAGS *= -Werror
 QMAKE_CXXFLAGS_DEBUG += -pg
 QMAKE_LFLAGS_DEBUG += -pg
-OBJECTS_DIR = build
-MOC_DIR = build
-UI_DIR = build
+#Build directories
+Release:DESTDIR = build/release
+Release:OBJECTS_DIR = build/release
+Release:MOC_DIR = build/release
+Release:RCC_DIR = build/release
+Release:UI_DIR = build/release
+Debug:DESTDIR = build/debug
+Debug:OBJECTS_DIR = build/debug
+Debug:MOC_DIR = build/debug
+Debug:RCC_DIR = build/debug
+Debug:UI_DIR = build/debug
 CONFIG *= qt \
     warn_on \
     thread \
@@ -41,10 +49,10 @@ INCLUDEPATH *= src/inc/public/
 unix { 
     isEmpty(PREFIX):PREFIX = /usr/local
     message("ATTENTION, running 'make install' will install files under '" $$PREFIX "'. If you wish to change this, rerun qmake as follows 'qmake PREFIX=/desiredPath' instead.")
-    unix:target.path = $$PREFIX/lib
-    unix:headers.files = $$PUBLIC_HEADERS
-    unix:headers.path = $$PREFIX/include
-    unix:INSTALLS += target \
+    target.path = $$PREFIX/lib
+    headers.files = $$PUBLIC_HEADERS
+    headers.path = $$PREFIX/include
+    INSTALLS += target \
         headers
 }
 
