@@ -59,8 +59,10 @@ int IPDS::SerialIOPrivate::win32_cfg_serial(unsigned int fd, int baud, int bits,
 	dcb.wReserved = FALSE; /* as per msdn */
 
 	/* Set the port properties and write the string out the port. */
-	if(SetCommState((HANDLE) _get_osfhandle (fd) ,&dcb) == 0)
-		printf(__FILE__": win32_setup_serial_params()\n\tERROR setting serial attributes\n");
+    if(SetCommState((HANDLE) _get_osfhandle (fd) ,&dcb) == 0) {
+        printf(__FILE__": win32_setup_serial_params()\n\tERROR setting serial attributes\n");
+        return -1;
+    }
 
 	/* Set timeout params in a fashion that mimics linux behavior */
 
