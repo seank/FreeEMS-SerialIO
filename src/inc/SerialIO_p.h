@@ -62,7 +62,7 @@ public:
 	void run();
 	void writeString(QString&);
     QStringList getPorts();
-	QString getVersion();
+    QString getVersion();
 
 signals:
 	void readBytesFinished(payloadVector);
